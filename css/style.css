@@ -377,6 +377,14 @@ body {
     font-weight: 500;
 }
 
+.layui-form-label {
+    width: 120px;
+}
+
+.layui-input-block {
+    margin-left: 140px;
+}
+
 #encode-input {
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 13px;
@@ -454,6 +462,7 @@ body {
 
 /* UI 隐藏模式 */
 body.ui-hidden .layui-header,
+body.ui-hidden .mobile-header,
 body.ui-hidden .window-toolbar,
 body.ui-hidden .quote-help,
 body.ui-hidden .layui-container,
@@ -495,24 +504,379 @@ body.ui-hidden {
     text-align: right;
 }
 
+/* 手机版底部 TabBar 导航 */
+.mobile-tabbar {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border-top: 1px solid #e6e6e6;
+    justify-content: space-around;
+    padding: 0;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    height: 55px;
+    align-items: center;
+}
+
+.mobile-tab-btn {
+    flex: 1;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    color: #999;
+    font-size: 9px;
+    transition: color 0.2s;
+    height: 100%;
+    line-height: 1;
+}
+
+.mobile-tab-btn i {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.mobile-tab-btn span {
+    line-height: 1;
+    display: block;
+}
+
+.mobile-tab-btn.active {
+    color: #1E9FFF;
+}
+
+.mobile-tab-btn.active i {
+    color: #1E9FFF;
+}
+
 /* 响应式设计 */
 @media screen and (max-width: 768px) {
+    .layui-container {
+        padding: 0px 5px;
+    }
+
+    /* 隐藏PC版导航 */
+    #app-header {
+        display: none;
+    }
+    
+    /* 显示手机版 TabBar */
+    .mobile-tabbar {
+        display: flex;
+    }
+    
+    /* 调整body距离，为底部 TabBar 留出空间 */
+    .layui-body {
+        top: 0;
+        bottom: 60px;
+        overflow-y: auto;
+        padding-bottom: 0;
+    }
+    
     .layui-logo {
         font-size: 16px;
         padding: 0 10px;
     }
     
-    .quick-tools,
+    /* 手机版按钮样式 */
+    .layui-btn {
+        font-size: 12px !important;
+        padding: 6px 10px !important;
+        height: auto !important;
+        line-height: 1.2 !important;
+    }
+    
+    .layui-btn-xs {
+        font-size: 11px !important;
+        padding: 4px 8px !important;
+    }
+    
+    .quick-tools {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .quick-tools button {
+        flex: 1;
+        min-width: 60px;
+        margin: 0 !important;
+        font-size: 12px !important;
+        padding: 6px 8px !important;
+    }
+    
     .result-tools {
         margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .result-tools button {
+        flex: 0 1 auto;
+        min-width: auto;
+        margin: 0 !important;
+        font-size: 12px !important;
+        padding: 6px 12px !important;
+        white-space: nowrap;
+    }
+    
+    .editor-container {
+        padding: 10px;
+        max-width: 100%;
+    }
+    
+    .layui-card {
+        margin-bottom: 10px;
+    }
+    
+    .layui-card-header {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        padding: 12px;
+    }
+    
+    .layui-card-header span {
+        font-size: 16px;
+    }
+    
+    .layui-card-body {
+        padding: 12px;
+    }
+    
+    #latex-input {
+        font-size: 16px;
+        min-height: 150px;
+    }
+    
+    .latex-output-container {
+        min-height: 150px;
+        padding: 15px;
+        font-size: 16px;
+    }
+    
+    #font-size-display {
+        padding: 0 8px;
+    }
+    
+    .window-toolbar {
+        padding: 10px;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .toolbar-left,
+    .toolbar-right {
+        width: 100%;
+        gap: 5px;
+    }
+    
+    .toolbar-left button,
+    .toolbar-right button {
+        flex: 1;
+        margin: 0 !important;
+        padding: 8px 4px !important;
+        font-size: 12px !important;
+        height: 32px;
+    }
+    
+    .latex-window {
+        min-width: 200px;
+        font-size: 12px;
     }
     
     .window-toolbar {
         padding: 10px;
     }
     
-    .latex-window {
-        min-width: 250px;
+    /* 参考表模式适配 */
+    #reference-mode {
+        padding: 10px;
+    }
+    
+    #reference-mode .layui-card {
+        margin-bottom: 0;
+    }
+    
+    #reference-mode .layui-card-body {
+        overflow-x: auto;
+    }
+    
+    #reference-mode .layui-card-header h2 {
+        font-size: 18px;
+    }
+    
+    #reference-mode .layui-colla-title {
+        font-size: 14px;
+        padding: 10px 12px;
+        padding-left: 30px;
+        position: relative;
+    }
+    
+    #reference-mode .layui-table {
+        font-size: 12px;
+        overflow-x: auto;
+        display: block;
+    }
+    
+    #reference-mode .layui-table td,
+    #reference-mode .layui-table th {
+        padding: 8px 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+    }
+    
+    #reference-mode .layui-table code {
+        font-size: 11px;
+        word-break: break-word;
+    }
+    
+    /* 在线预览模式适配 */
+    #quote-mode {
+        padding: 10px;
+    }
+    
+    .help-header {
+        padding: 20px 15px;
+        margin: -10px -10px 0 -10px;
+        border-radius: 0;
+    }
+    
+    .help-header i {
+        font-size: 36px !important;
+        margin-bottom: 10px;
+    }
+    
+    .help-header h2 {
+        font-size: 20px;
+    }
+    
+    .help-desc {
+        font-size: 13px;
+    }
+    
+    .help-section {
+        margin: 15px 0;
+        padding: 0 10px;
+        overflow-x: auto;
+    }
+    
+    .help-section h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .help-section h4 {
+        font-size: 14px;
+        margin: 15px 0 10px 0;
+    }
+    
+    .help-section .layui-table {
+        font-size: 12px;
+        overflow-x: auto;
+        display: block;
+    }
+    
+    .help-section .layui-table code {
+        font-size: 11px;
+        word-break: break-word;
+    }
+    
+    .help-section .layui-table td,
+    .help-section .layui-table th {
+        padding: 8px 10px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: break-word;
+    }
+    
+    .example-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+    
+    .example-label {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .example-url {
+        width: 100%;
+    }
+    
+    .example-url input {
+        font-size: 11px;
+    }
+    
+    .example-item button {
+        width: 100%;
+        margin-top: 8px;
+    }
+    
+    .quote-help .layui-form {
+        margin: 10px 0;
+        padding: 12px;
+        border-radius: 4px;
+    }
+    
+    .quote-help .layui-form-label {
+        width: auto;
+        display: block;
+        margin-bottom: 8px;
+    }
+    
+    .layui-form-item {
+        margin-bottom: 12px;
+    }
+    
+    .layui-form-label {
+        width: auto;
+        display: block;
+        margin-bottom: 8px;
+    }
+    
+    .layui-input-block {
+        margin-left: 0 !important;
+    }
+    
+    #encode-input,
+    #encode-output {
+        font-size: 12px;
+    }
+    
+    .encode-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .encode-buttons button {
+        width: 100%;
+        margin: 0 !important;
+    }
+    
+    #local-file-input {
+        display: none;
+    }
+    
+    .quote-display {
+        font-size: 14px;
     }
 }
 

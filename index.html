@@ -31,6 +31,26 @@
         </ul>
     </div>
 
+    <!-- 手机版底部 TabBar 导航 -->
+    <div class="mobile-tabbar" id="mobile-tabbar">
+        <button class="mobile-tab-btn active" data-mode="editor">
+            <i class="layui-icon layui-icon-edit"></i>
+            <span>编辑</span>
+        </button>
+        <button class="mobile-tab-btn" data-mode="window">
+            <i class="layui-icon layui-icon-layer"></i>
+            <span>窗口</span>
+        </button>
+        <button class="mobile-tab-btn" data-mode="reference">
+            <i class="layui-icon layui-icon-list"></i>
+            <span>参考</span>
+        </button>
+        <button class="mobile-tab-btn" data-mode="quote">
+            <i class="layui-icon layui-icon-read"></i>
+            <span>预览</span>
+        </button>
+    </div>
+
     <!-- 主内容区域 -->
     <div class="layui-body" id="app-body">
         <!-- 编辑器模式 -->
@@ -120,7 +140,7 @@
 
         <!-- 参考表模式 -->
         <div id="reference-mode" class="mode-container" style="display: none;">
-            <div class="layui-container" style="padding: 20px;">
+            <div class="layui-container" style="padding: 5px;">
                 <div class="layui-card">
                     <div class="layui-card-header">
                         <h2 style="margin: 0;">LaTeX 语法参考表</h2>

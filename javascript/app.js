@@ -907,11 +907,20 @@
                 WindowMode.init();
                 QuoteMode.init();
                 
-                // 导航切换
+                // PC 版导航切换
                 const navItems = document.querySelectorAll('#main-nav .layui-nav-item');
                 navItems.forEach(item => {
                     item.addEventListener('click', () => {
                         const mode = item.getAttribute('data-mode');
+                        this.switchMode(mode);
+                    });
+                });
+                
+                // 手机版 TabBar 导航切换
+                const mobileTabBtns = document.querySelectorAll('.mobile-tab-btn');
+                mobileTabBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const mode = btn.getAttribute('data-mode');
                         this.switchMode(mode);
                     });
                 });
@@ -931,13 +940,23 @@
         switchMode(mode) {
             AppState.currentMode = mode;
             
-            // 更新导航
+            // 更新 PC 版导航
             const navItems = document.querySelectorAll('#main-nav .layui-nav-item');
             navItems.forEach(item => {
                 if (item.getAttribute('data-mode') === mode) {
                     item.classList.add('layui-this');
                 } else {
                     item.classList.remove('layui-this');
+                }
+            });
+            
+            // 更新手机版导航
+            const mobileTabBtns = document.querySelectorAll('.mobile-tab-btn');
+            mobileTabBtns.forEach(btn => {
+                if (btn.getAttribute('data-mode') === mode) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
                 }
             });
             
