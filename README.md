@@ -31,3 +31,6 @@
 - 如遇 bug 可及时提交 issue
 - 欢迎提交 PR 贡献本项目
 - 欢迎 Star 支持本项目
+
+### 四、鸣谢
+- https://github.com/michael-brade/LaTeX.js
