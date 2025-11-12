@@ -21,8 +21,11 @@
             <li class="layui-nav-item" data-mode="window">
                 <a href="javascript:;">多窗口</a>
             </li>
+            <li class="layui-nav-item" data-mode="reference">
+                <a href="javascript:;">参考表</a>
+            </li>
             <li class="layui-nav-item" data-mode="quote">
-                <a href="javascript:;">网站引入</a>
+                <a href="javascript:;">在线预览</a>
             </li>
         </ul>
     </div>
@@ -76,77 +79,637 @@
 
         <!-- 多窗口模式 -->
         <div id="window-mode" class="mode-container" style="display: none;">
-            <div class="window-toolbar">
-                <div class="toolbar-left">
-                    <button class="layui-btn layui-btn-sm" id="new-window-btn">
-                        <i class="layui-icon layui-icon-addition"></i> 新建窗口
-                    </button>
-                    <button class="layui-btn layui-btn-sm" id="temp-preview-btn">
-                        <i class="layui-icon layui-icon-close-fill"></i> 临时预览
-                    </button>
-                    <button class="layui-btn layui-btn-sm layui-btn-primary" id="all-edit-btn">
-                        <i class="layui-icon layui-icon-edit"></i> 全部编辑
-                    </button>
-                    <button class="layui-btn layui-btn-sm layui-btn-primary" id="all-preview-btn">
-                        <i class="layui-icon layui-icon-read"></i> 全部预览
-                    </button>
-                </div>
-                <div class="toolbar-right">
-                    <button class="layui-btn layui-btn-sm layui-btn-warm" id="import-mlatex">
-                        <i class="layui-icon layui-icon-file"></i> 导入 MLATEX
-                    </button>
-                    <button class="layui-btn layui-btn-sm layui-btn-normal" id="export-mlatex">
-                        <i class="layui-icon layui-icon-export"></i> 导出 MLATEX
-                    </button>
+            <div class="mobile-warning">
+                <div class="layui-card">
+                    <div class="layui-card-body" style="text-align: center; padding: 60px 20px;">
+                        <i class="layui-icon layui-icon-screen-full" style="font-size: 80px; color: #FFB800;"></i>
+                        <h2 style="margin-top: 20px; color: #666; text-align: center;">请在 PC 端使用本功能</h2>
+                        <p style="color: #999; margin-top: 10px;">多窗口编辑功能需要较大的屏幕空间，建议使用电脑访问以获得最佳体验。</p>
+                    </div>
                 </div>
             </div>
-            <div id="windows-container" class="windows-container"></div>
+            <div class="window-mode-content">
+                <div class="window-toolbar">
+                    <div class="toolbar-left">
+                        <button class="layui-btn layui-btn-sm" id="new-window-btn">
+                            <i class="layui-icon layui-icon-addition"></i> 新建窗口
+                        </button>
+                        <button class="layui-btn layui-btn-sm" id="temp-preview-btn">
+                            <i class="layui-icon layui-icon-close-fill"></i> 临时预览
+                        </button>
+                        <button class="layui-btn layui-btn-sm layui-btn-primary" id="all-edit-btn">
+                            <i class="layui-icon layui-icon-edit"></i> 全部编辑
+                        </button>
+                        <button class="layui-btn layui-btn-sm layui-btn-primary" id="all-preview-btn">
+                            <i class="layui-icon layui-icon-read"></i> 全部预览
+                        </button>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="layui-btn layui-btn-sm layui-btn-warm" id="import-mlatex">
+                            <i class="layui-icon layui-icon-file"></i> 导入 MLATEX
+                        </button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" id="export-mlatex">
+                            <i class="layui-icon layui-icon-export"></i> 导出 MLATEX
+                        </button>
+                    </div>
+                </div>
+                <div id="windows-container" class="windows-container"></div>
+            </div>
         </div>
 
-        <!-- 网站引入模式 -->
+        <!-- 参考表模式 -->
+        <div id="reference-mode" class="mode-container" style="display: none;">
+            <div class="layui-container" style="padding: 20px;">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <h2 style="margin: 0;">LaTeX 语法参考表</h2>
+                    </div>
+                    <div class="layui-card-body">
+                        <div class="layui-collapse" lay-accordion="">
+                            <!-- 基础符号 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">基础符号</h2>
+                                <div class="layui-colla-content layui-show">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="40%">语法</th>
+                                                <th width="60%">说明</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>$...$</code></td>
+                                                <td>行内公式</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>$$...$$</code></td>
+                                                <td>独立公式（居中显示）</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>^</code></td>
+                                                <td>上标，如 <code>x^2</code> → $x^2$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>_</code></td>
+                                                <td>下标，如 <code>x_i</code> → $x_i$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\text{文字}</code></td>
+                                                <td>在公式中插入普通文字</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 分数和根号 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">分数和根号</h2>
+                                <div class="layui-colla-content">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="40%">语法</th>
+                                                <th width="60%">效果</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>\frac{a}{b}</code></td>
+                                                <td>$\frac{a}{b}$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\dfrac{a}{b}</code></td>
+                                                <td>显示风格分数（更大）</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\sqrt{x}</code></td>
+                                                <td>$\sqrt{x}$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\sqrt[n]{x}</code></td>
+                                                <td>$\sqrt[3]{x}$ （n次方根）</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 求和、积分、极限 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">求和、积分、极限</h2>
+                                <div class="layui-colla-content">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="40%">语法</th>
+                                                <th width="60%">效果</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>\sum_{i=0}^{n}</code></td>
+                                                <td>$\sum_{i=0}^{n}$ 求和</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\prod_{i=1}^{n}</code></td>
+                                                <td>$\prod_{i=1}^{n}$ 连乘</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\int_{a}^{b}</code></td>
+                                                <td>$\int_{a}^{b}$ 积分</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\iint</code>, <code>\iiint</code></td>
+                                                <td>二重积分、三重积分</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\oint</code></td>
+                                                <td>$\oint$ 环路积分</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\lim_{x \to \infty}</code></td>
+                                                <td>$\lim_{x \to \infty}$ 极限</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 希腊字母 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">希腊字母</h2>
+                                <div class="layui-colla-content">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="20%">小写语法</th>
+                                                <th width="20%">效果</th>
+                                                <th width="20%">大写语法</th>
+                                                <th width="20%">效果</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>\alpha</code></td>
+                                                <td>$\alpha$</td>
+                                                <td><code>\Alpha</code></td>
+                                                <td>A</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\beta</code></td>
+                                                <td>$\beta$</td>
+                                                <td><code>\Beta</code></td>
+                                                <td>B</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\gamma</code></td>
+                                                <td>$\gamma$</td>
+                                                <td><code>\Gamma</code></td>
+                                                <td>$\Gamma$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\delta</code></td>
+                                                <td>$\delta$</td>
+                                                <td><code>\Delta</code></td>
+                                                <td>$\Delta$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\epsilon</code>, <code>\varepsilon</code></td>
+                                                <td>$\epsilon$, ε</td>
+                                                <td><code>\Epsilon</code></td>
+                                                <td>E</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\theta</code>, <code>\vartheta</code></td>
+                                                <td>$\theta$</td>
+                                                <td><code>\Theta</code></td>
+                                                <td>$\Theta$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\lambda</code></td>
+                                                <td>$\lambda$</td>
+                                                <td><code>\Lambda</code></td>
+                                                <td>$\Lambda$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\mu</code></td>
+                                                <td>$\mu$</td>
+                                                <td><code>\Mu</code></td>
+                                                <td>M</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\pi</code>, <code>\varpi</code></td>
+                                                <td>$\pi$</td>
+                                                <td><code>\Pi</code></td>
+                                                <td>$\Pi$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\sigma</code>, <code>\varsigma</code></td>
+                                                <td>$\sigma$</td>
+                                                <td><code>\Sigma</code></td>
+                                                <td>$\Sigma$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\phi</code>, <code>\varphi</code></td>
+                                                <td>$\phi$</td>
+                                                <td><code>\Phi</code></td>
+                                                <td>$\Phi$</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\omega</code></td>
+                                                <td>$\omega$</td>
+                                                <td><code>\Omega</code></td>
+                                                <td>$\Omega$</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 运算符 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">运算符</h2>
+                                <div class="layui-colla-content">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="40%">语法</th>
+                                                <th width="60%">效果</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>\pm</code></td>
+                                                <td>$\pm$ 加减</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\mp</code></td>
+                                                <td>$\mp$ 减加</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\times</code></td>
+                                                <td>$\times$ 乘号</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\div</code></td>
+                                                <td>$\div$ 除号</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\cdot</code></td>
+                                                <td>$\cdot$ 点乘</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\neq</code></td>
+                                                <td>$\neq$ 不等于</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\leq</code>, <code>\geq</code></td>
+                                                <td>$\leq$, $\geq$ 小于等于、大于等于</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\ll</code>, <code>\gg</code></td>
+                                                <td>$\ll$, $\gg$ 远小于、远大于</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\approx</code></td>
+                                                <td>$\approx$ 约等于</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\equiv</code></td>
+                                                <td>$\equiv$ 恒等于</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 括号 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">括号</h2>
+                                <div class="layui-colla-content">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="40%">语法</th>
+                                                <th width="60%">说明</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>()</code>, <code>[]</code>, <code>\{\}</code></td>
+                                                <td>普通括号、方括号、花括号</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\left( ... \right)</code></td>
+                                                <td>自动调整大小的括号</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\langle ... \rangle</code></td>
+                                                <td>$\langle x \rangle$ 尖括号</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\lfloor ... \rfloor</code></td>
+                                                <td>$\lfloor x \rfloor$ 下取整</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\lceil ... \rceil</code></td>
+                                                <td>$\lceil x \rceil$ 上取整</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 矩阵 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">矩阵</h2>
+                                <div class="layui-colla-content">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="50%">语法</th>
+                                                <th width="50%">说明</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 4px;">
+\begin{matrix}
+a & b \\
+c & d
+\end{matrix}</pre>
+                                                </td>
+                                                <td>无括号矩阵</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\begin{pmatrix}...\end{pmatrix}</code></td>
+                                                <td>圆括号矩阵</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\begin{bmatrix}...\end{bmatrix}</code></td>
+                                                <td>方括号矩阵</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\begin{vmatrix}...\end{vmatrix}</code></td>
+                                                <td>行列式（竖线）</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 特殊符号 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">特殊符号</h2>
+                                <div class="layui-colla-content">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="40%">语法</th>
+                                                <th width="60%">效果</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>\infty</code></td>
+                                                <td>$\infty$ 无穷</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\partial</code></td>
+                                                <td>$\partial$ 偏导</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\nabla</code></td>
+                                                <td>$\nabla$ 梯度</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\forall</code></td>
+                                                <td>$\forall$ 任意</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\exists</code></td>
+                                                <td>$\exists$ 存在</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\in</code>, <code>\notin</code></td>
+                                                <td>$\in$, $\notin$ 属于、不属于</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\subset</code>, <code>\supset</code></td>
+                                                <td>$\subset$, $\supset$ 子集、超集</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\cap</code>, <code>\cup</code></td>
+                                                <td>$\cap$, $\cup$ 交集、并集</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\emptyset</code></td>
+                                                <td>$\emptyset$ 空集</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\to</code>, <code>\rightarrow</code></td>
+                                                <td>$\to$ 箭头</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\Rightarrow</code>, <code>\Leftarrow</code></td>
+                                                <td>$\Rightarrow$, $\Leftarrow$ 双箭头</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- 上下标修饰 -->
+                            <div class="layui-colla-item">
+                                <h2 class="layui-colla-title">上下标修饰</h2>
+                                <div class="layui-colla-content">
+                                    <table class="layui-table">
+                                        <thead>
+                                            <tr>
+                                                <th width="40%">语法</th>
+                                                <th width="60%">效果</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>\hat{x}</code></td>
+                                                <td>$\hat{x}$ 帽子</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\bar{x}</code></td>
+                                                <td>$\bar{x}$ 横线</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\tilde{x}</code></td>
+                                                <td>$\tilde{x}$ 波浪线</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\vec{x}</code></td>
+                                                <td>$\vec{x}$ 向量</td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>\dot{x}</code>, <code>\ddot{x}</code></td>
+                                                <td>$\dot{x}$, $\ddot{x}$ 一阶、二阶导数</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 在线预览模式 -->
         <div id="quote-mode" class="mode-container" style="display: none;">
             <div class="layui-container">
                 <div class="layui-card">
-                    <div class="layui-card-header">网站引入工具</div>
+                    <div class="layui-card-header">在线预览工具</div>
                     <div class="layui-card-body">
                         <div id="quote-content">
                             <div class="quote-help">
-                                <h3>使用说明</h3>
-                                <p>您可以通过 URL 参数来引入 LaTeX 内容：</p>
-                                <ul>
-                                    <li><strong>url=</strong> - 引入一个网络位置的 LaTeX 文件</li>
-                                    <li><strong>base64=</strong> - 引入一段 LaTeX 内容的 Base64 编码</li>
-                                    <li><strong>ui=none</strong> - 隐藏所有 UI，只显示公式主体内容</li>
-                                    <li><strong>fontsize=</strong> - 指定公式字体大小（如：fontsize=20）</li>
-                                    <li><strong>align=</strong> - 指定对齐方式（left、right、center）</li>
-                                </ul>
-                                
-                                <h4>示例：</h4>
-                                <div class="layui-code">
-                                    <pre>
-?mode=quote&base64=JEU9bWNeMiQ=&fontsize=24&align=center
-?mode=quote&url=https://example.com/formula.tex&ui=none
-                                    </pre>
+                                <div class="help-header">
+                                    <i class="layui-icon layui-icon-read" style="font-size: 48px; color: #1E9FFF;"></i>
+                                    <h2 style="text-align: center;">在线预览工具</h2>
+                                    <p class="help-desc">通过 URL 参数在线预览 LaTeX 内容，支持嵌入到其他网站</p>
                                 </div>
 
+                                <div class="help-section">
+                                    <h3><i class="layui-icon layui-icon-form"></i> URL 参数说明</h3>
+                                    <table class="layui-table" lay-skin="line">
+                                        <thead>
+                                            <tr>
+                                                <th width="20%">参数名</th>
+                                                <th width="50%">说明</th>
+                                                <th width="30%">示例</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><code>url</code></td>
+                                                <td>引入一个网络位置的 LaTeX 文件</td>
+                                                <td><code>url=https://...</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>base64</code></td>
+                                                <td>引入一段 LaTeX 内容的 Base64 编码</td>
+                                                <td><code>base64=JEU9bWNeMiQ=</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>ui</code></td>
+                                                <td>设置为 <code>none</code> 时隐藏所有 UI，只显示公式内容</td>
+                                                <td><code>ui=none</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>fontsize</code></td>
+                                                <td>指定公式字体大小（像素）</td>
+                                                <td><code>fontsize=20</code></td>
+                                            </tr>
+                                            <tr>
+                                                <td><code>align</code></td>
+                                                <td>指定对齐方式：left、center、right</td>
+                                                <td><code>align=center</code></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="help-section">
+                                    <h3><i class="layui-icon layui-icon-star"></i> 使用示例</h3>
+                                    
+                                    <div class="example-group">
+                                        <h4>示例 1：通过 URL 加载 LaTeX 文件</h4>
+                                        <div class="example-item">
+                                            <div class="example-label">质能方程：</div>
+                                            <div class="example-url">
+                                                <input type="text" class="layui-input" readonly 
+                                                    value="https://latexreader.mutantcat.org/?mode=quote&url=https://latexreader.mutantcat.org/examples/emc2.tex">
+                                            </div>
+                                            <button class="layui-btn layui-btn-xs layui-btn-normal" 
+                                                onclick="window.open('?mode=quote&url=https://latexreader.mutantcat.org/examples/emc2.tex')">
+                                                <i class="layui-icon layui-icon-read"></i> 预览
+                                            </button>
+                                        </div>
+
+                                        <div class="example-item">
+                                            <div class="example-label">勾股定理：</div>
+                                            <div class="example-url">
+                                                <input type="text" class="layui-input" readonly 
+                                                    value="https://latexreader.mutantcat.org/?mode=quote&url=https://latexreader.mutantcat.org/examples/pythagorean.tex">
+                                            </div>
+                                            <button class="layui-btn layui-btn-xs layui-btn-normal" 
+                                                onclick="window.open('?mode=quote&url=https://latexreader.mutantcat.org/examples/pythagorean.tex')">
+                                                <i class="layui-icon layui-icon-read"></i> 预览
+                                            </button>
+                                        </div>
+
+                                        <div class="example-item">
+                                            <div class="example-label">二次方程：</div>
+                                            <div class="example-url">
+                                                <input type="text" class="layui-input" readonly 
+                                                    value="https://latexreader.mutantcat.org/?mode=quote&url=https://latexreader.mutantcat.org/examples/quadratic.tex">
+                                            </div>
+                                            <button class="layui-btn layui-btn-xs layui-btn-normal" 
+                                                onclick="window.open('?mode=quote&url=https://latexreader.mutantcat.org/examples/quadratic.tex')">
+                                                <i class="layui-icon layui-icon-read"></i> 预览
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="example-group">
+                                        <h4>示例 2：通过 Base64 编码传递内容</h4>
+                                        <div class="example-item">
+                                            <div class="example-label">质能方程（纯净模式）：</div>
+                                            <div class="example-url">
+                                                <input type="text" class="layui-input" readonly 
+                                                    value="https://latexreader.mutantcat.org/?mode=quote&base64=JEU9bWNeMiQ=&ui=none&fontsize=24&align=center">
+                                            </div>
+                                            <button class="layui-btn layui-btn-xs layui-btn-normal" 
+                                                onclick="window.open('?mode=quote&base64=JEU9bWNeMiQ=&ui=none&fontsize=24&align=center')">
+                                                <i class="layui-icon layui-icon-read"></i> 预览
+                                            </button>
+                                        </div>
+
+                                        <div class="example-item">
+                                            <div class="example-label">积分公式：</div>
+                                            <div class="example-url">
+                                                <input type="text" class="layui-input" readonly 
+                                                    value="https://latexreader.mutantcat.org/?mode=quote&base64=JCRcaW50XzBeXGluZnR5IGVeey14XjJ9ZHggPSBcZnJhY3tcc3FydHtccGl9fXsyfSQk&align=center">
+                                            </div>
+                                            <button class="layui-btn layui-btn-xs layui-btn-normal" 
+                                                onclick="window.open('?mode=quote&base64=JCRcaW50XzBeXGluZnR5IGVeey14XjJ9ZHggPSBcZnJhY3tcc3FydHtccGl9fXsyfSQk&align=center')">
+                                                <i class="layui-icon layui-icon-read"></i> 预览
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <h4>在线编码工具：</h4>
                                 <div class="layui-form">
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">LaTeX 内容</label>
                                         <div class="layui-input-block">
-                                            <textarea id="encode-input" class="layui-textarea" placeholder="输入要编码的 LaTeX 内容"></textarea>
+                                            <textarea id="encode-input" class="layui-textarea" placeholder="输入要编码的 LaTeX 内容" rows="4"></textarea>
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">Base64 编码</label>
                                         <div class="layui-input-block">
-                                            <input type="text" id="encode-output" class="layui-input" readonly>
+                                            <input type="text" id="encode-output" class="layui-input" readonly placeholder="Base64 编码结果将显示在这里">
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
                                         <div class="layui-input-block">
-                                            <button type="button" class="layui-btn" id="encode-btn">生成 Base64</button>
-                                            <button type="button" class="layui-btn layui-btn-primary" id="copy-url-btn">复制完整 URL</button>
+                                            <button type="button" class="layui-btn" id="encode-btn">
+                                                <i class="layui-icon layui-icon-snowflake"></i> 生成 Base64
+                                            </button>
+                                            <button type="button" class="layui-btn layui-btn-normal" id="copy-url-btn">
+                                                <i class="layui-icon layui-icon-file"></i> 复制完整 URL
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

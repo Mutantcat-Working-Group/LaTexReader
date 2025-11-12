@@ -799,18 +799,22 @@
                 this.displayContent(latexContent, params);
             }
             
-            // 检查 ui 参数
+            // 检查 ui 参数 - 必须在有内容的情况下才隐藏 UI
             if (params.ui === 'none' && hasContent) {
                 document.body.classList.add('ui-hidden');
+                // 将 quote-display 移到 body 的直接子元素
+                if (quoteDisplay) {
+                    document.body.appendChild(quoteDisplay);
+                }
             }
             
             // 显示或隐藏帮助
             if (hasContent) {
-                quoteHelp.style.display = 'none';
-                quoteDisplay.style.display = 'block';
+                if (quoteHelp) quoteHelp.style.display = 'none';
+                if (quoteDisplay) quoteDisplay.style.display = 'block';
             } else {
-                quoteHelp.style.display = 'block';
-                quoteDisplay.style.display = 'none';
+                if (quoteHelp) quoteHelp.style.display = 'block';
+                if (quoteDisplay) quoteDisplay.style.display = 'none';
             }
         },
 
@@ -879,6 +883,8 @@
                 mode === 'editor' ? 'block' : 'none';
             document.getElementById('window-mode').style.display = 
                 mode === 'window' ? 'block' : 'none';
+            document.getElementById('reference-mode').style.display = 
+                mode === 'reference' ? 'block' : 'none';
             document.getElementById('quote-mode').style.display = 
                 mode === 'quote' ? 'block' : 'none';
             

@@ -100,6 +100,15 @@ body {
 }
 
 /* 多窗口模式样式 */
+.mobile-warning {
+    display: none;
+    padding: 20px;
+}
+
+.window-mode-content {
+    display: block;
+}
+
 .window-toolbar {
     position: sticky;
     top: 0;
@@ -259,40 +268,168 @@ body {
 }
 
 .quote-help {
+    padding: 0;
+}
+
+.help-header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    margin: -20px -20px 0 -20px;
+}
+
+.help-header i {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.help-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.help-desc {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.95;
+}
+
+.help-section {
+    margin: 30px 0;
+    padding: 0 20px;
+}
+
+.help-section h3 {
+    color: #1E9FFF;
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e6e6e6;
+}
+
+.help-section h3 i {
+    margin-right: 8px;
+}
+
+.help-section h4 {
+    color: #333;
+    font-size: 16px;
+    margin: 25px 0 15px 0;
+    font-weight: 600;
+}
+
+.help-section .layui-table code {
+    background: #f5f5f5;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #e83e8c;
+    font-size: 13px;
+}
+
+.example-group {
+    margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+.example-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #1E9FFF;
+}
+
+.example-label {
+    min-width: 140px;
+    font-weight: 500;
+    color: #333;
+}
+
+.example-url {
+    flex: 1;
+}
+
+.example-url input {
+    font-size: 12px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    background: white;
+}
+
+.example-item button {
+    min-width: 80px;
+}
+
+.quote-help .layui-form {
+    margin: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.quote-help .layui-form-label {
+    font-weight: 500;
+}
+
+#encode-input {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+}
+
+#encode-output {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px;
+    background: #f5f5f5;
+}
+
+/* 参考表模式样式 */
+#reference-mode {
     padding: 20px;
 }
 
-.quote-help h3 {
-    color: #1E9FFF;
+#reference-mode .layui-card {
+    margin-bottom: 0;
+}
+
+#reference-mode .layui-card-header h2 {
+    font-size: 24px;
+    color: #333;
+}
+
+#reference-mode .layui-table {
     margin-top: 0;
 }
 
-.quote-help ul {
-    line-height: 2;
-}
-
-.quote-help ul li {
-    margin-bottom: 8px;
-}
-
-.quote-help strong {
-    color: #1E9FFF;
+#reference-mode .layui-table code {
+    background: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 3px;
     font-family: 'Consolas', 'Monaco', monospace;
-}
-
-.layui-code {
-    background: #f8f8f8;
-    border: 1px solid #e6e6e6;
-    border-radius: 4px;
-    padding: 15px;
-    margin: 10px 0;
-}
-
-.layui-code pre {
-    margin: 0;
-    font-family: 'Consolas', 'Monaco', monospace;
+    color: #e83e8c;
     font-size: 13px;
-    line-height: 1.8;
+}
+
+#reference-mode .layui-table pre {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+#reference-mode .layui-colla-title {
+    font-size: 16px;
+    font-weight: bold;
+    background: #f8f8f8;
+}
+
+#reference-mode .layui-table td,
+#reference-mode .layui-table th {
+    padding: 12px 15px;
 }
 
 .quote-display {
@@ -306,21 +443,31 @@ body {
 /* UI 隐藏模式 */
 body.ui-hidden .layui-header,
 body.ui-hidden .window-toolbar,
-body.ui-hidden .quote-help {
+body.ui-hidden .quote-help,
+body.ui-hidden .layui-container,
+body.ui-hidden .layui-card {
     display: none !important;
 }
 
 body.ui-hidden .layui-body {
     top: 0;
+    background: transparent;
 }
 
 body.ui-hidden #quote-mode {
     padding: 0;
+    background: transparent;
 }
 
 body.ui-hidden .quote-display {
     border: none;
-    min-height: 100vh;
+    padding: 0;
+    min-height: auto;
+    background: transparent;
+}
+
+body.ui-hidden {
+    background: transparent;
 }
 
 /* 对齐方式 */
@@ -354,5 +501,16 @@ body.ui-hidden .quote-display {
     
     .latex-window {
         min-width: 250px;
+    }
+}
+
+/* 小屏幕隐藏多窗口功能 */
+@media screen and (max-width: 1024px) {
+    #window-mode .mobile-warning {
+        display: block;
+    }
+    
+    #window-mode .window-mode-content {
+        display: none;
     }
 }
