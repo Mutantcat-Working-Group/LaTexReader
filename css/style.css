@@ -461,53 +461,34 @@ body {
 }
 
 /* UI 隐藏模式 */
-body.ui-hidden {
-    margin: 0;
-    padding: 0;
-    background: white;
-    overflow: hidden;
-}
-
 body.ui-hidden .layui-header,
 body.ui-hidden .mobile-header,
 body.ui-hidden .window-toolbar,
 body.ui-hidden .quote-help,
 body.ui-hidden .layui-container,
-body.ui-hidden .layui-card,
-body.ui-hidden .settings-float-btn,
-body.ui-hidden .mobile-tabbar {
+body.ui-hidden .layui-card {
     display: none !important;
 }
 
 body.ui-hidden .layui-body {
     top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
     background: transparent;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
 }
 
 body.ui-hidden #quote-mode {
     padding: 0;
     background: transparent;
-    display: none;
 }
 
 body.ui-hidden .quote-display {
-    border: none !important;
-    padding: 0 !important;
-    min-height: auto !important;
-    background: transparent !important;
-    width: 100%;
-    height: 100%;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    margin: 0 !important;
+    border: none;
+    padding: 0;
+    min-height: auto;
+    background: transparent;
+}
+
+body.ui-hidden {
+    background: transparent;
 }
 
 /* 对齐方式 */
@@ -909,85 +890,3 @@ body.ui-hidden .quote-display {
         display: none;
     }
 }
-
-/* 悬浮设置按钮样式 */
-.settings-float-btn {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #1E9FFF;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 24px;
-    cursor: pointer;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    z-index: 999;
-    border: none;
-    user-select: none;
-}
-
-.settings-float-btn:hover {
-    background-color: #0b7de0;
-    transform: scale(1.1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-
-.settings-float-btn:active {
-    transform: scale(0.95);
-}
-
-/* 设置窗口 */
-#settings-modal {
-    min-width: 320px;
-    max-width: 500px;
-    border-radius: 4px;
-    animation: slideInRight 0.3s ease;
-    position: fixed;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    margin: 0 !important;
-}
-
-.layui-layer-content {
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-/* 动画 */
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* 手机版本调整 */
-@media screen and (max-width: 768px) {
-    .settings-float-btn {
-        bottom: 70px;
-        right: 15px;
-        width: 45px;
-        height: 45px;
-        font-size: 20px;
-    }
-
-    #settings-modal {
-        min-width: 280px;
-        max-width: calc(100% - 30px);
-        left: 50% !important;
-        right: auto !important;
-        transform: translate(-50%, -50%) !important;
-    }
-}
-

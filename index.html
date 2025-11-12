@@ -10,8 +10,6 @@
     <link href="https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/css/katex.min.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="css/katex.min.css"> -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- MathJax 用于支持完整 LaTeX 文档 -->
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
     <!-- 头部导航 -->
@@ -605,9 +603,9 @@ c & d
                                     <table class="layui-table" lay-skin="line">
                                         <thead>
                                             <tr>
-                                                <th width="15%">参数名</th>
+                                                <th width="20%">参数名</th>
                                                 <th width="50%">说明</th>
-                                                <th width="35%">示例</th>
+                                                <th width="30%">示例</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -622,13 +620,8 @@ c & d
                                                 <td><code>base64=JEU9bWNeMiQ=</code></td>
                                             </tr>
                                             <tr>
-                                                <td><code>engine</code></td>
-                                                <td>指定渲染引擎：<code>latexjs</code>（默认）或 <code>mathjax</code></td>
-                                                <td><code>engine=latexjs</code></td>
-                                            </tr>
-                                            <tr>
                                                 <td><code>ui</code></td>
-                                                <td>设置为 <code>none</code> 时隐藏所有 UI（包括设置按钮和底部导航），只显示公式内容</td>
+                                                <td>设置为 <code>none</code> 时隐藏所有 UI，只显示公式内容</td>
                                                 <td><code>ui=none</code></td>
                                             </tr>
                                             <tr>
@@ -638,7 +631,7 @@ c & d
                                             </tr>
                                             <tr>
                                                 <td><code>align</code></td>
-                                                <td>指定对齐方式：<code>left</code>、<code>center</code>、<code>right</code></td>
+                                                <td>指定对齐方式：left、center、right</td>
                                                 <td><code>align=center</code></td>
                                             </tr>
                                         </tbody>
@@ -690,25 +683,13 @@ c & d
                                     <div class="example-group">
                                         <h4>示例 2：通过 Base64 编码传递内容</h4>
                                         <div class="example-item">
-                                            <div class="example-label">质能方程（L引擎）：</div>
+                                            <div class="example-label">质能方程：</div>
                                             <div class="example-url">
                                                 <input type="text" class="layui-input" readonly 
-                                                    value="https://latexreader.mutantcat.org/?mode=quote&base64=JEU9bWNeMiQ=&engine=latexjs&ui=none&fontsize=24&align=center">
+                                                    value="https://latexreader.mutantcat.org/?mode=quote&base64=JEU9bWNeMiQ=&ui=none&fontsize=24&align=center">
                                             </div>
                                             <button class="layui-btn layui-btn-xs layui-btn-normal" 
-                                                onclick="window.open('?mode=quote&base64=JEU9bWNeMiQ=&engine=latexjs&ui=none&fontsize=24&align=center')">
-                                                <i class="layui-icon layui-icon-read"></i> 预览
-                                            </button>
-                                        </div>
-
-                                        <div class="example-item">
-                                            <div class="example-label">质能方程（M引擎）：</div>
-                                            <div class="example-url">
-                                                <input type="text" class="layui-input" readonly 
-                                                    value="https://latexreader.mutantcat.org/?mode=quote&base64=JEU9bWNeMiQ=&engine=mathjax&ui=none&fontsize=24&align=center">
-                                            </div>
-                                            <button class="layui-btn layui-btn-xs layui-btn-normal" 
-                                                onclick="window.open('?mode=quote&base64=JEU9bWNeMiQ=&engine=mathjax&ui=none&fontsize=24&align=center')">
+                                                onclick="window.open('?mode=quote&base64=JEU9bWNeMiQ=&ui=none&fontsize=24&align=center')">
                                                 <i class="layui-icon layui-icon-read"></i> 预览
                                             </button>
                                         </div>
@@ -717,10 +698,10 @@ c & d
                                             <div class="example-label">积分公式：</div>
                                             <div class="example-url">
                                                 <input type="text" class="layui-input" readonly 
-                                                    value="https://latexreader.mutantcat.org/?mode=quote&base64=JCRcaW50XzBeXGluZnR5IGVeey14XjJ9ZHggPSBcZnJhY3tcc3FydHtccGl9fXsyfSQk&engine=latexjs&align=center">
+                                                    value="https://latexreader.mutantcat.org/?mode=quote&base64=JCRcaW50XzBeXGluZnR5IGVeey14XjJ9ZHggPSBcZnJhY3tcc3FydHtccGl9fXsyfSQk&align=center">
                                             </div>
                                             <button class="layui-btn layui-btn-xs layui-btn-normal" 
-                                                onclick="window.open('?mode=quote&base64=JCRcaW50XzBeXGluZnR5IGVeey14XjJ9ZHggPSBcZnJhY3tcc3FydHtccGl9fXsyfSQk&engine=latexjs&align=center')">
+                                                onclick="window.open('?mode=quote&base64=JCRcaW50XzBeXGluZnR5IGVeey14XjJ9ZHggPSBcZnJhY3tcc3FydHtccGl9fXsyfSQk&align=center')">
                                                 <i class="layui-icon layui-icon-read"></i> 预览
                                             </button>
                                         </div>
@@ -768,48 +749,14 @@ c & d
         </div>
     </div>
 
-    <!-- 悬浮设置按钮 -->
-    <div id="settings-float-btn" class="settings-float-btn" title="点击打开设置">
-        <i class="layui-icon layui-icon-set"></i>
-    </div>
-
-    <!-- 设置窗口 -->
-    <div id="settings-modal" class="layui-layer" style="display: none; position: fixed; z-index: 10000;">
-        <div class="layui-layer-content" style="background: white; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); padding: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                <h3 style="margin: 0;">设置</h3>
-                <button id="settings-close-btn" class="layui-btn layui-btn-xs" style="margin: 0;">
-                    <i class="layui-icon layui-icon-close"></i>
-                </button>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; margin-bottom: 8px; font-weight: bold;">
-                    <i class="layui-icon layui-icon-engine"></i> LaTeX 渲染引擎
-                </label>
-                <select id="engine-selector" class="layui-input" style="margin-bottom: 8px;">
-                    <option value="latexjs">LaTeX.js (推荐 - 仅支持表达式片段)</option>
-                    <option value="mathjax">MathJax 3 (备选 - 仅支持表达式片段)</option>
-                </select>
-                <div style="font-size: 12px; color: #666; line-height: 1.6;">
-                    <p><strong>LaTeX.js</strong>: 轻量级引擎，快速渲染简单表达式</p>
-                    <p><strong>MathJax 3</strong>: 功能丰富，支持更复杂的数学表达式</p>
-                </div>
-            </div>
-
-            <div style="text-align: right; padding-top: 10px; border-top: 1px solid #eee;">
-                <button id="settings-confirm-btn" class="layui-btn layui-btn-sm">
-                    <i class="layui-icon layui-icon-ok"></i> 应用
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script src="//unpkg.com/layui@2.13.0/dist/layui.js"></script>
     <!-- <script src="javascript/layui.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
     <!-- <script src="javascript/latex.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- <script src="javascript/html2canvas.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <!-- <script src="javascript/tex-svg.js"></script> -->
     <script src="javascript/app.js"></script>
 </body>
 </html>

@@ -8,8 +8,7 @@
         editorFontSize: 100,
         windows: {},
         windowZIndex: 1,
-        nextWindowId: 1,
-        renderEngine: 'latexjs'  // 默认使用 LaTeX.js
+        nextWindowId: 1
     };
 
     // 工具函数
@@ -51,44 +50,8 @@
             }
         },
 
-        // 使用 MathJax 3 渲染
-        renderWithMathJax(text, container, options = {}) {
-            try {
-                container.innerHTML = '';
-                
-                // 使用 MathJax 渲染
-                return MathJax.tex2svgPromise(text)
-                    .then(node => {
-                        container.innerHTML = '';
-                        container.appendChild(node);
-                        
-                        // 应用字体大小
-                        if (options.fontSize) {
-                            container.style.fontSize = options.fontSize + 'px';
-                        }
-                        
-                        // 应用对齐方式
-                        if (options.align) {
-                            container.className = container.className.replace(/align-\w+/g, '');
-                            container.classList.add('align-' + options.align);
-                        }
-                        
-                        return true;
-                    })
-                    .catch(error => {
-                        console.error('MathJax 渲染错误:', error);
-                        container.innerHTML = '<div class="layui-text" style="color: red;">MathJax 渲染错误: ' + error.message + '</div>';
-                        return false;
-                    });
-            } catch (error) {
-                console.error('MathJax 错误:', error);
-                container.innerHTML = '<div class="layui-text" style="color: red;">MathJax 错误: ' + error.message + '</div>';
-                return Promise.reject(error);
-            }
-        },
-
-        // 使用 LaTeX.js 渲染
-        renderWithLatexJs(text, container, options = {}) {
+        // 渲染 LaTeX
+        renderLatex(text, container, options = {}) {
             try {
                 container.innerHTML = '';
                 
@@ -101,6 +64,7 @@
                 // 添加样式和脚本
                 if (!document.querySelector('#latex-styles')) {
                     const styles = generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.12.4/dist/");
+                    // const styles = generator.stylesAndScripts("//latexreader.mutantcat.org/latax_base");
                     styles.id = 'latex-styles';
                     document.head.appendChild(styles);
                 }
@@ -120,21 +84,11 @@
                     container.classList.add('align-' + options.align);
                 }
                 
-                return Promise.resolve(true);
+                return true;
             } catch (error) {
-                console.error('LaTeX.js 渲染错误:', error);
-                container.innerHTML = '<div class="layui-text" style="color: red;">LaTeX.js 渲染错误: ' + error.message + '</div>';
-                return Promise.reject(error);
-            }
-        },
-
-        // 渲染 LaTeX（自动选择引擎）
-        renderLatex(text, container, options = {}) {
-            // 根据当前选择的引擎调用相应的渲染函数
-            if (AppState.renderEngine === 'mathjax') {
-                return this.renderWithMathJax(text, container, options);
-            } else {
-                return this.renderWithLatexJs(text, container, options);
+                console.error('LaTeX 渲染错误:', error);
+                container.innerHTML = '<div class="layui-text" style="color: red;">渲染错误: ' + error.message + '</div>';
+                return false;
             }
         }
     };
@@ -229,17 +183,9 @@
             const input = document.getElementById('latex-input');
             const output = document.getElementById('latex-output');
             
-            // renderLatex 现在返回 Promise，需要处理异步
-            const result = Utils.renderLatex(input.value, output, {
+            Utils.renderLatex(input.value, output, {
                 fontSize: AppState.editorFontSize / 100 * 16
             });
-            
-            // 如果是 Promise 就等待完成
-            if (result && typeof result.then === 'function') {
-                result.catch(error => {
-                    console.error('渲染失败:', error);
-                });
-            }
         },
 
         updateFontSize() {
@@ -390,30 +336,6 @@
                 if (windowDiv) {
                     this.constrainWindowSize(windowDiv);
                     this.constrainWindowPosition(windowDiv);
-                }
-            });
-        },
-
-        // 重新渲染所有多窗口中已打开的预览
-        rerenderAllPreviews() {
-            Object.keys(AppState.windows).forEach(windowId => {
-                const windowDiv = document.getElementById(windowId);
-                if (!windowDiv) return;
-
-                const preview = windowDiv.querySelector('.window-preview');
-                const editor = windowDiv.querySelector('.window-editor');
-                
-                // 检查预览是否可见
-                if (preview && preview.style.display !== 'none') {
-                    // 重新渲染
-                    const result = Utils.renderLatex(editor.value, preview);
-                    
-                    // 如果是 Promise 就等待完成
-                    if (result && typeof result.then === 'function') {
-                        result.catch(error => {
-                            console.error('多窗口预览重新渲染失败:', error);
-                        });
-                    }
                 }
             });
         },
@@ -939,39 +861,9 @@
             // 检查 ui 参数 - 必须在有内容的情况下才隐藏 UI
             if (params.ui === 'none' && hasContent) {
                 document.body.classList.add('ui-hidden');
-                
-                // 隐藏所有 UI 元素
-                const header = document.getElementById('app-header');
-                const mobileTabbar = document.getElementById('mobile-tabbar');
-                const settingsBtn = document.getElementById('settings-float-btn');
-                const appBody = document.getElementById('app-body');
-                
-                if (header) header.style.display = 'none';
-                if (mobileTabbar) mobileTabbar.style.display = 'none';
-                if (settingsBtn) settingsBtn.style.display = 'none';
-                
-                // 调整 app-body 的位置和样式
-                if (appBody) {
-                    appBody.style.top = '0';
-                    appBody.style.bottom = '0';
-                    appBody.style.padding = '0';
-                    appBody.style.overflow = 'hidden';
-                }
-                
-                // 调整 body 的边距
-                document.body.style.margin = '0';
-                document.body.style.padding = '0';
-                
                 // 将 quote-display 移到 body 的直接子元素
                 if (quoteDisplay) {
                     document.body.appendChild(quoteDisplay);
-                    quoteDisplay.style.display = 'flex';
-                    quoteDisplay.style.alignItems = 'center';
-                    quoteDisplay.style.justifyContent = 'center';
-                    quoteDisplay.style.minHeight = '100vh';
-                    quoteDisplay.style.background = 'transparent';
-                    quoteDisplay.style.border = 'none';
-                    quoteDisplay.style.padding = '0';
                 }
             }
             
@@ -990,13 +882,6 @@
             
             const options = {};
             
-            // 渲染引擎：latexjs（默认）或 mathjax
-            if (params.engine && ['latexjs', 'mathjax'].includes(params.engine)) {
-                AppState.renderEngine = params.engine;
-            } else {
-                AppState.renderEngine = 'latexjs';
-            }
-            
             // 字体大小
             if (params.fontsize) {
                 options.fontSize = parseInt(params.fontsize);
@@ -1008,10 +893,6 @@
             }
             
             Utils.renderLatex(latex, quoteDisplay, options);
-        },
-
-        render() {
-            this.checkUrlParams();
         }
     };
 
@@ -1044,9 +925,6 @@
                     });
                 });
                 
-                // 初始化设置面板
-                this.initSettings();
-                
                 // 检查 URL 参数初始化模式
                 const params = Utils.getUrlParams();
                 
@@ -1056,67 +934,6 @@
                 } else if (params.mode) {
                     this.switchMode(params.mode);
                 }
-            });
-        },
-
-        initSettings() {
-            const floatBtn = document.getElementById('settings-float-btn');
-            const modal = document.getElementById('settings-modal');
-            const closeBtn = document.getElementById('settings-close-btn');
-            const confirmBtn = document.getElementById('settings-confirm-btn');
-            const engineSelector = document.getElementById('engine-selector');
-            
-            // 恢复之前保存的选择
-            const savedEngine = localStorage.getItem('renderEngine') || 'latexjs';
-            AppState.renderEngine = savedEngine;
-            engineSelector.value = savedEngine;
-            
-            // 打开/关闭设置 - 再次点击关闭
-            floatBtn.addEventListener('click', () => {
-                if (modal.style.display === 'block') {
-                    modal.style.display = 'none';
-                } else {
-                    modal.style.display = 'block';
-                }
-            });
-            
-            // 关闭设置
-            closeBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-            
-            // 点击 modal 外部关闭
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-            
-            // 应用设置
-            confirmBtn.addEventListener('click', () => {
-                const newEngine = engineSelector.value;
-                AppState.renderEngine = newEngine;
-                localStorage.setItem('renderEngine', newEngine);
-                
-                layui.use('layer', () => {
-                    const layer = layui.layer;
-                    layer.msg('已切换到 ' + (newEngine === 'mathjax' ? 'MathJax 3' : 'LaTeX.js') + ' 引擎', {
-                        icon: 1,
-                        time: 2000
-                    });
-                });
-                
-                modal.style.display = 'none';
-                
-                // 重新渲染当前内容
-                if (AppState.currentMode === 'editor') {
-                    EditorMode.render();
-                } else if (AppState.currentMode === 'quote') {
-                    QuoteMode.render();
-                }
-                
-                // 重新渲染多窗口中所有已打开的预览
-                WindowMode.rerenderAllPreviews();
             });
         },
 
