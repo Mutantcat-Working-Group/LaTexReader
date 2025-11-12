@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mutantcat LaTex Reader</title>
+    <link href="//unpkg.com/layui@2.13.0/dist/css/layui.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="css/layui.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/css/katex.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="css/katex.min.css"> -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    
+    
+
+    <script src="//unpkg.com/layui@2.13.0/dist/layui.js"></script>
+    <!-- <script src="javascript/layui.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
+    <!-- <script src="javascript/latex.js"></script> -->
+    <script src="javascript/app.js"></script>
+
+    <script>
+    var text = "The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein's famous equation is $E=mc^2$. For calculus, we have $\\int_0^\\infty e^{-x^2}dx = \\frac{\\sqrt{\\pi}}{2}$."
+
+    var generator = new latexjs.HtmlGenerator({ hyphenate: false })
+
+    generator = latexjs.parse(text, { generator: generator })
+
+    document.head.appendChild(generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.12.4/dist/"))
+    //document.head.appendChild(generator.stylesAndScripts("//latax.mutantcat.org/latax_base"))
+    document.body.appendChild(generator.domFragment())
+  </script>
+</body>
+</html>
