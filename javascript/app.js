@@ -194,6 +194,74 @@
 
     // 多窗口模式
     const WindowMode = {
+        tempPreviewMode: false,
+        tempPreviewStates: {},
+
+        // 检查并修正窗口位置，确保不超出边界
+        constrainWindowPosition(windowDiv) {
+            const container = document.getElementById('windows-container');
+            const containerRect = container.getBoundingClientRect();
+            
+            const windowWidth = windowDiv.offsetWidth;
+            const windowHeight = windowDiv.offsetHeight;
+            
+            let left = parseInt(windowDiv.style.left) || 0;
+            let top = parseInt(windowDiv.style.top) || 0;
+            
+            // 计算可用空间（减去头部高度60px和工具栏高度）
+            const maxLeft = containerRect.width - windowWidth;
+            const maxTop = containerRect.height - windowHeight;
+            
+            // 至少保留50px可见，以便用户可以拖动回来
+            const minVisible = 50;
+            
+            // 限制左边界（至少显示50px）
+            if (left < minVisible - windowWidth) {
+                left = minVisible - windowWidth;
+            }
+            
+            // 限制右边界（至少显示50px）
+            if (left > containerRect.width - minVisible) {
+                left = containerRect.width - minVisible;
+            }
+            
+            // 限制上边界（标题栏必须可见）
+            if (top < 0) {
+                top = 0;
+            }
+            
+            // 限制下边界（至少显示标题栏，约40px）
+            if (top > containerRect.height - 40) {
+                top = Math.max(0, containerRect.height - 40);
+            }
+            
+            windowDiv.style.left = left + 'px';
+            windowDiv.style.top = top + 'px';
+        },
+
+        // 检查并修正窗口大小
+        constrainWindowSize(windowDiv) {
+            const container = document.getElementById('windows-container');
+            const containerRect = container.getBoundingClientRect();
+            
+            let width = parseInt(windowDiv.style.width) || 400;
+            let height = parseInt(windowDiv.style.height) || 300;
+            
+            // 最小尺寸
+            const minWidth = 300;
+            const minHeight = 200;
+            
+            // 最大尺寸（容器尺寸）
+            const maxWidth = containerRect.width;
+            const maxHeight = containerRect.height;
+            
+            width = Math.max(minWidth, Math.min(width, maxWidth));
+            height = Math.max(minHeight, Math.min(height, maxHeight));
+            
+            windowDiv.style.width = width + 'px';
+            windowDiv.style.height = height + 'px';
+        },
+
         init() {
             document.getElementById('new-window-btn').addEventListener('click', () => {
                 this.createWindow();
@@ -206,6 +274,134 @@
             document.getElementById('import-mlatex').addEventListener('click', () => {
                 this.importMLatex();
             });
+
+            document.getElementById('all-edit-btn').addEventListener('click', () => {
+                this.switchAllWindows('editor');
+            });
+
+            document.getElementById('all-preview-btn').addEventListener('click', () => {
+                this.switchAllWindows('preview');
+            });
+
+            document.getElementById('temp-preview-btn').addEventListener('click', () => {
+                this.toggleTempPreview();
+            });
+
+            // 监听窗口大小变化，重新校正所有窗口位置
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    this.constrainAllWindows();
+                }, 100);
+            });
+        },
+
+        // 校正所有窗口位置和大小
+        constrainAllWindows() {
+            Object.keys(AppState.windows).forEach(windowId => {
+                const windowDiv = document.getElementById(windowId);
+                if (windowDiv) {
+                    this.constrainWindowSize(windowDiv);
+                    this.constrainWindowPosition(windowDiv);
+                }
+            });
+        },
+
+        switchAllWindows(mode) {
+            Object.keys(AppState.windows).forEach(windowId => {
+                const windowDiv = document.getElementById(windowId);
+                if (!windowDiv) return;
+
+                const tabs = windowDiv.querySelectorAll('.window-tab');
+                const editor = windowDiv.querySelector('.window-editor');
+                const preview = windowDiv.querySelector('.window-preview');
+
+                tabs.forEach(tab => {
+                    if (tab.getAttribute('data-tab') === mode) {
+                        tab.classList.add('active');
+                    } else {
+                        tab.classList.remove('active');
+                    }
+                });
+
+                if (mode === 'editor') {
+                    editor.style.display = 'block';
+                    preview.style.display = 'none';
+                } else {
+                    editor.style.display = 'none';
+                    preview.style.display = 'block';
+                    Utils.renderLatex(editor.value, preview);
+                }
+            });
+        },
+
+        toggleTempPreview() {
+            const btn = document.getElementById('temp-preview-btn');
+            const icon = btn.querySelector('.layui-icon');
+
+            if (!this.tempPreviewMode) {
+                // 进入临时预览模式
+                this.tempPreviewMode = true;
+                icon.className = 'layui-icon layui-icon-eye';
+                btn.innerHTML = '<i class="layui-icon layui-icon-eye"></i> 临时预览';
+                btn.classList.add('active');
+                btn.classList.remove('layui-btn-primary');
+
+                // 保存当前状态
+                this.tempPreviewStates = {};
+                Object.keys(AppState.windows).forEach(windowId => {
+                    const windowDiv = document.getElementById(windowId);
+                    if (!windowDiv) return;
+
+                    const editor = windowDiv.querySelector('.window-editor');
+                    const preview = windowDiv.querySelector('.window-preview');
+                    
+                    // 记录当前显示状态
+                    this.tempPreviewStates[windowId] = {
+                        isPreview: preview.style.display !== 'none'
+                    };
+                });
+
+                // 切换到全部预览
+                this.switchAllWindows('preview');
+            } else {
+                // 退出临时预览模式
+                this.tempPreviewMode = false;
+                icon.className = 'layui-icon layui-icon-close-fill';
+                btn.innerHTML = '<i class="layui-icon layui-icon-close-fill"></i> 临时预览';
+                btn.classList.remove('active');
+
+                // 恢复之前的状态
+                Object.keys(AppState.windows).forEach(windowId => {
+                    const windowDiv = document.getElementById(windowId);
+                    if (!windowDiv || !this.tempPreviewStates[windowId]) return;
+
+                    const tabs = windowDiv.querySelectorAll('.window-tab');
+                    const editor = windowDiv.querySelector('.window-editor');
+                    const preview = windowDiv.querySelector('.window-preview');
+                    const wasPreview = this.tempPreviewStates[windowId].isPreview;
+
+                    tabs.forEach(tab => {
+                        const tabName = tab.getAttribute('data-tab');
+                        if ((wasPreview && tabName === 'preview') || (!wasPreview && tabName === 'editor')) {
+                            tab.classList.add('active');
+                        } else {
+                            tab.classList.remove('active');
+                        }
+                    });
+
+                    if (wasPreview) {
+                        editor.style.display = 'none';
+                        preview.style.display = 'block';
+                    } else {
+                        editor.style.display = 'block';
+                        preview.style.display = 'none';
+                    }
+                });
+
+                this.tempPreviewStates = {};
+            }
         },
 
         createWindow(data = null) {
@@ -222,6 +418,8 @@
             const windowDiv = document.createElement('div');
             windowDiv.className = 'latex-window';
             windowDiv.id = windowId;
+            
+            // 设置初始位置和大小
             windowDiv.style.left = (data?.x || 50 + Object.keys(AppState.windows).length * 30) + 'px';
             windowDiv.style.top = (data?.y || 50 + Object.keys(AppState.windows).length * 30) + 'px';
             windowDiv.style.width = (data?.width || 400) + 'px';
@@ -254,6 +452,10 @@
             
             container.appendChild(windowDiv);
             
+            // 修正位置和大小，确保在可见范围内
+            this.constrainWindowSize(windowDiv);
+            this.constrainWindowPosition(windowDiv);
+            
             // 保存窗口状态
             AppState.windows[windowId] = {
                 id: windowId,
@@ -280,6 +482,9 @@
             const preview = windowDiv.querySelector('.window-preview');
             const tabs = windowDiv.querySelectorAll('.window-tab');
             const nameInput = windowDiv.querySelector('.window-title input');
+            
+            // 保存 this 引用
+            const self = this;
             
             // 点击窗口设置为活动状态
             windowDiv.addEventListener('mousedown', () => {
@@ -316,6 +521,8 @@
                 if (isDragging) {
                     isDragging = false;
                     header.classList.remove('dragging');
+                    // 检查并修正窗口位置
+                    self.constrainWindowPosition(windowDiv);
                 }
             });
             
@@ -347,6 +554,9 @@
             document.addEventListener('mouseup', () => {
                 if (isResizing) {
                     isResizing = false;
+                    // 检查并修正窗口大小和位置
+                    self.constrainWindowSize(windowDiv);
+                    self.constrainWindowPosition(windowDiv);
                 }
             });
             

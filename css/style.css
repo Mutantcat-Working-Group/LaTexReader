@@ -50,14 +50,16 @@ body {
 }
 
 .mode-container {
-    padding: 20px;
+    padding: 0;
     min-height: 100%;
+    overflow-x: hidden;
 }
 
 /* 编辑器模式样式 */
 .editor-container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 20px;
 }
 
 .layui-card {
@@ -102,16 +104,33 @@ body {
     position: sticky;
     top: 0;
     background: white;
-    padding: 15px;
+    padding: 10px 15px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 100;
-    margin-bottom: 20px;
+    margin-bottom: 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.window-toolbar button {
+    margin: 0 !important;
+}
+
+#temp-preview-btn.active {
+    background-color: #1E9FFF;
+    color: white;
+}
+
+#temp-preview-btn.active:hover {
+    background-color: #0C85E8;
 }
 
 .windows-container {
     position: relative;
-    min-height: calc(100vh - 160px);
+    min-height: calc(100vh - 130px);
     background: #e8e8e8;
+    overflow: hidden;
 }
 
 .latex-window {
@@ -226,6 +245,10 @@ body {
 }
 
 /* 网站引入模式样式 */
+#quote-mode {
+    padding: 20px;
+}
+
 .quote-help {
     padding: 20px;
 }
