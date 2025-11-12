@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mutantcat LaTex Reader</title>
+    <title>Mutantcat LaTeX Reader</title>
     <link href="//unpkg.com/layui@2.13.0/dist/css/layui.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="css/layui.css"> -->
     <link href="https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/css/katex.min.css" rel="stylesheet">
@@ -11,25 +11,146 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    
-    
+    <!-- 头部导航 -->
+    <div class="layui-header" id="app-header">
+        <div class="layui-logo">Mutantcat LaTeX Reader</div>
+        <ul class="layui-nav layui-layout-left" id="main-nav">
+            <li class="layui-nav-item layui-this" data-mode="editor">
+                <a href="javascript:;">编辑器</a>
+            </li>
+            <li class="layui-nav-item" data-mode="window">
+                <a href="javascript:;">多窗口</a>
+            </li>
+            <li class="layui-nav-item" data-mode="quote">
+                <a href="javascript:;">网站引入</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="layui-body" id="app-body">
+        <!-- 编辑器模式 -->
+        <div id="editor-mode" class="mode-container">
+            <div class="layui-container editor-container">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span>LaTeX 输入</span>
+                                <div class="quick-tools">
+                                    <button class="layui-btn layui-btn-xs" data-latex="\frac{a}{b}">分数</button>
+                                    <button class="layui-btn layui-btn-xs" data-latex="\sqrt{x}">根号</button>
+                                    <button class="layui-btn layui-btn-xs" data-latex="\int_{a}^{b}">积分</button>
+                                    <button class="layui-btn layui-btn-xs" data-latex="\sum_{i=0}^{n}">求和</button>
+                                    <button class="layui-btn layui-btn-xs" data-latex="\lim_{x \to \infty}">极限</button>
+                                    <button class="layui-btn layui-btn-xs" data-latex="\alpha \beta \gamma">希腊字母</button>
+                                </div>
+                            </div>
+                            <div class="layui-card-body">
+                                <textarea id="latex-input" class="layui-textarea" placeholder="请输入 LaTeX 表达式，例如：$E=mc^2$" rows="6"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span>渲染结果</span>
+                                <div class="result-tools">
+                                    <button class="layui-btn layui-btn-xs" id="zoom-out"><i class="layui-icon layui-icon-subtraction"></i> 缩小</button>
+                                    <span id="font-size-display">100%</span>
+                                    <button class="layui-btn layui-btn-xs" id="zoom-in"><i class="layui-icon layui-icon-addition"></i> 放大</button>
+                                    <button class="layui-btn layui-btn-xs layui-btn-normal" id="save-image"><i class="layui-icon layui-icon-download-circle"></i> 保存图片</button>
+                                </div>
+                            </div>
+                            <div class="layui-card-body">
+                                <div id="latex-output" class="latex-output-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 多窗口模式 -->
+        <div id="window-mode" class="mode-container" style="display: none;">
+            <div class="window-toolbar">
+                <button class="layui-btn layui-btn-sm" id="new-window-btn">
+                    <i class="layui-icon layui-icon-addition"></i> 新建窗口
+                </button>
+                <button class="layui-btn layui-btn-sm layui-btn-normal" id="export-mlatex">
+                    <i class="layui-icon layui-icon-export"></i> 导出 MLATEX
+                </button>
+                <button class="layui-btn layui-btn-sm layui-btn-warm" id="import-mlatex">
+                    <i class="layui-icon layui-icon-file"></i> 导入 MLATEX
+                </button>
+            </div>
+            <div id="windows-container" class="windows-container"></div>
+        </div>
+
+        <!-- 网站引入模式 -->
+        <div id="quote-mode" class="mode-container" style="display: none;">
+            <div class="layui-container">
+                <div class="layui-card">
+                    <div class="layui-card-header">网站引入工具</div>
+                    <div class="layui-card-body">
+                        <div id="quote-content">
+                            <div class="quote-help">
+                                <h3>使用说明</h3>
+                                <p>您可以通过 URL 参数来引入 LaTeX 内容：</p>
+                                <ul>
+                                    <li><strong>url=</strong> - 引入一个网络位置的 LaTeX 文件</li>
+                                    <li><strong>base64=</strong> - 引入一段 LaTeX 内容的 Base64 编码</li>
+                                    <li><strong>ui=none</strong> - 隐藏所有 UI，只显示公式主体内容</li>
+                                    <li><strong>fontsize=</strong> - 指定公式字体大小（如：fontsize=20）</li>
+                                    <li><strong>align=</strong> - 指定对齐方式（left、right、center）</li>
+                                </ul>
+                                
+                                <h4>示例：</h4>
+                                <div class="layui-code">
+                                    <pre>
+?mode=quote&base64=JEU9bWNeMiQ=&fontsize=24&align=center
+?mode=quote&url=https://example.com/formula.tex&ui=none
+                                    </pre>
+                                </div>
+
+                                <h4>在线编码工具：</h4>
+                                <div class="layui-form">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">LaTeX 内容</label>
+                                        <div class="layui-input-block">
+                                            <textarea id="encode-input" class="layui-textarea" placeholder="输入要编码的 LaTeX 内容"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">Base64 编码</label>
+                                        <div class="layui-input-block">
+                                            <input type="text" id="encode-output" class="layui-input" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button type="button" class="layui-btn" id="encode-btn">生成 Base64</button>
+                                            <button type="button" class="layui-btn layui-btn-primary" id="copy-url-btn">复制完整 URL</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="quote-display" class="quote-display"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="//unpkg.com/layui@2.13.0/dist/layui.js"></script>
     <!-- <script src="javascript/layui.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script>
     <!-- <script src="javascript/latex.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="javascript/app.js"></script>
-
-    <script>
-    var text = "The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein's famous equation is $E=mc^2$. For calculus, we have $\\int_0^\\infty e^{-x^2}dx = \\frac{\\sqrt{\\pi}}{2}$."
-
-    var generator = new latexjs.HtmlGenerator({ hyphenate: false })
-
-    generator = latexjs.parse(text, { generator: generator })
-
-    document.head.appendChild(generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.12.4/dist/"))
-    //document.head.appendChild(generator.stylesAndScripts("//latax.mutantcat.org/latax_base"))
-    document.body.appendChild(generator.domFragment())
-  </script>
 </body>
 </html>

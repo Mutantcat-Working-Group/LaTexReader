@@ -1,0 +1,326 @@
+/* 全局样式 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    background-color: #f2f2f2;
+}
+
+/* 头部样式 */
+.layui-header {
+    background-color: #1E9FFF;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    height: 60px;
+    line-height: 60px;
+}
+
+.layui-logo {
+    float: left;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 0 20px;
+}
+
+.layui-nav {
+    background: transparent;
+}
+
+.layui-nav .layui-nav-item a {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.layui-nav .layui-this a {
+    color: #fff !important;
+}
+
+/* 主体内容区域 */
+.layui-body {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    background-color: #f2f2f2;
+}
+
+.mode-container {
+    padding: 20px;
+    min-height: 100%;
+}
+
+/* 编辑器模式样式 */
+.editor-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.layui-card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.layui-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quick-tools button,
+.result-tools button {
+    margin-left: 5px;
+}
+
+#latex-input {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.latex-output-container {
+    min-height: 200px;
+    padding: 20px;
+    background: white;
+    border: 1px solid #e6e6e6;
+    border-radius: 2px;
+    overflow: auto;
+}
+
+#font-size-display {
+    display: inline-block;
+    margin: 0 10px;
+    font-weight: bold;
+    color: #1E9FFF;
+}
+
+/* 多窗口模式样式 */
+.window-toolbar {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    margin-bottom: 20px;
+}
+
+.windows-container {
+    position: relative;
+    min-height: calc(100vh - 160px);
+    background: #e8e8e8;
+}
+
+.latex-window {
+    position: absolute;
+    background: white;
+    border: 2px solid #d2d2d2;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    min-width: 300px;
+    min-height: 200px;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+}
+
+.latex-window.active {
+    border-color: #1E9FFF;
+    box-shadow: 0 6px 16px rgba(30, 159, 255, 0.3);
+    z-index: 1000 !important;
+}
+
+.window-header {
+    background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
+    padding: 8px 12px;
+    cursor: move;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d2d2d2;
+}
+
+.window-header.dragging {
+    cursor: grabbing;
+}
+
+.window-title {
+    font-weight: bold;
+    color: #333;
+    flex: 1;
+}
+
+.window-title input {
+    border: none;
+    background: transparent;
+    font-weight: bold;
+    color: #333;
+    width: 100%;
+    outline: none;
+}
+
+.window-controls button {
+    margin-left: 5px;
+}
+
+.window-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 38px);
+}
+
+.window-tabs {
+    display: flex;
+    background: #f5f5f5;
+    border-bottom: 1px solid #d2d2d2;
+}
+
+.window-tab {
+    padding: 8px 16px;
+    cursor: pointer;
+    border-right: 1px solid #d2d2d2;
+    user-select: none;
+}
+
+.window-tab.active {
+    background: white;
+    color: #1E9FFF;
+    font-weight: bold;
+}
+
+.window-tab-content {
+    flex: 1;
+    padding: 10px;
+    overflow: auto;
+    position: relative;
+}
+
+.window-editor {
+    width: 100%;
+    height: 100%;
+    border: none;
+    resize: none;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 14px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.window-preview {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.window-resize-handle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: linear-gradient(135deg, transparent 50%, #1E9FFF 50%);
+}
+
+/* 网站引入模式样式 */
+.quote-help {
+    padding: 20px;
+}
+
+.quote-help h3 {
+    color: #1E9FFF;
+    margin-top: 0;
+}
+
+.quote-help ul {
+    line-height: 2;
+}
+
+.quote-help ul li {
+    margin-bottom: 8px;
+}
+
+.quote-help strong {
+    color: #1E9FFF;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.layui-code {
+    background: #f8f8f8;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.layui-code pre {
+    margin: 0;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.quote-display {
+    padding: 20px;
+    background: white;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    min-height: 200px;
+}
+
+/* UI 隐藏模式 */
+body.ui-hidden .layui-header,
+body.ui-hidden .window-toolbar,
+body.ui-hidden .quote-help {
+    display: none !important;
+}
+
+body.ui-hidden .layui-body {
+    top: 0;
+}
+
+body.ui-hidden #quote-mode {
+    padding: 0;
+}
+
+body.ui-hidden .quote-display {
+    border: none;
+    min-height: 100vh;
+}
+
+/* 对齐方式 */
+.align-left {
+    text-align: left;
+}
+
+.align-center {
+    text-align: center;
+}
+
+.align-right {
+    text-align: right;
+}
+
+/* 响应式设计 */
+@media screen and (max-width: 768px) {
+    .layui-logo {
+        font-size: 16px;
+        padding: 0 10px;
+    }
+    
+    .quick-tools,
+    .result-tools {
+        margin-top: 10px;
+    }
+    
+    .window-toolbar {
+        padding: 10px;
+    }
+    
+    .latex-window {
+        min-width: 250px;
+    }
+}
