@@ -103,8 +103,8 @@
             const saveImage = document.getElementById('save-image');
             const fontSizeDisplay = document.getElementById('font-size-display');
             
-            // 设置默认示例
-            input.value = 'The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein\'s famous equation is $E=mc^2$. For calculus, we have $\\int_0^\\infty e^{-x^2}dx = \\frac{\\sqrt{\\pi}}{2}$.';
+            // 检查 URL 参数，加载外部数据
+            this.loadExternalData(input);
             
             // 实时渲染
             let renderTimeout;
@@ -145,6 +145,38 @@
             
             // 初始渲染
             this.render();
+        },
+
+        loadExternalData(input) {
+            const params = Utils.getUrlParams();
+            
+            // 优先检查 base64 参数
+            if (params.base64) {
+                const decoded = Utils.decodeBase64(params.base64);
+                if (decoded) {
+                    input.value = decoded;
+                    return;
+                }
+            }
+            
+            // 其次检查 url 参数
+            if (params.url) {
+                fetch(params.url)
+                    .then(response => response.text())
+                    .then(text => {
+                        input.value = text;
+                        this.render();
+                    })
+                    .catch(error => {
+                        console.error('加载 URL 失败:', error);
+                        // 失败时使用默认示例
+                        input.value = 'The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein\'s famous equation is $E=mc^2$. For calculus, we have $\\int_0^\\infty e^{-x^2}dx = \\frac{\\sqrt{\\pi}}{2}$.';
+                    });
+                return;
+            }
+            
+            // 使用默认示例
+            input.value = 'The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein\'s famous equation is $E=mc^2$. For calculus, we have $\\int_0^\\infty e^{-x^2}dx = \\frac{\\sqrt{\\pi}}{2}$.';
         },
 
         render() {
@@ -713,6 +745,7 @@
             const encodeOutput = document.getElementById('encode-output');
             const encodeBtn = document.getElementById('encode-btn');
             const copyUrlBtn = document.getElementById('copy-url-btn');
+            const localFileInput = document.getElementById('local-file-input');
             
             // Base64 编码
             encodeBtn.addEventListener('click', () => {
@@ -759,6 +792,32 @@
                         layui.layer.msg('URL 已复制到剪贴板');
                     });
                 });
+            });
+
+            // 本地文件上传处理
+            localFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const content = event.target.result;
+                    
+                    // 自动编码为 Base64
+                    const encoded = Utils.encodeBase64(content);
+                    
+                    // 构建 URL
+                    const url = window.location.origin + window.location.pathname + 
+                               '?mode=quote&base64=' + encoded;
+                    
+                    // 打开新页面展示
+                    window.open(url, '_blank');
+                    
+                    layui.use('layer', function() {
+                        layui.layer.msg('已在新标签页中打开预览');
+                    });
+                };
+                reader.readAsText(file);
             });
             
             // 检查 URL 参数
@@ -859,7 +918,11 @@
                 
                 // 检查 URL 参数初始化模式
                 const params = Utils.getUrlParams();
-                if (params.mode) {
+                
+                // 如果携带了 base64 或 url 参数但没有指定 mode，默认进入编辑器模式
+                if ((params.base64 || params.url) && !params.mode) {
+                    this.switchMode('editor');
+                } else if (params.mode) {
                     this.switchMode(params.mode);
                 }
             });

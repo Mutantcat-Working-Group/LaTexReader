@@ -396,6 +396,10 @@ body {
     margin-left: 8px;
 }
 
+#local-file-input {
+    display: none;
+}
+
 /* 参考表模式样式 */
 #reference-mode {
     padding: 20px;
