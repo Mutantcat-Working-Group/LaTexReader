@@ -34,3 +34,5 @@
 
 ### 四、鸣谢
 - https://github.com/michael-brade/LaTeX.js
+- https://www.jsdelivr.com/
+- https://sm.ms/
