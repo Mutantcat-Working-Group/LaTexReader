@@ -461,6 +461,13 @@ body {
 }
 
 /* UI 隐藏模式 */
+body.ui-hidden {
+    margin: 0;
+    padding: 0;
+    background: white;
+    overflow: hidden;
+}
+
 body.ui-hidden .layui-header,
 body.ui-hidden .mobile-header,
 body.ui-hidden .window-toolbar,
@@ -474,23 +481,33 @@ body.ui-hidden .mobile-tabbar {
 
 body.ui-hidden .layui-body {
     top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     background: transparent;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 body.ui-hidden #quote-mode {
     padding: 0;
     background: transparent;
+    display: none;
 }
 
 body.ui-hidden .quote-display {
-    border: none;
-    padding: 0;
-    min-height: auto;
-    background: transparent;
-}
-
-body.ui-hidden {
-    background: transparent;
+    border: none !important;
+    padding: 0 !important;
+    min-height: auto !important;
+    background: transparent !important;
+    width: 100%;
+    height: 100%;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin: 0 !important;
 }
 
 /* 对齐方式 */

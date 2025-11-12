@@ -944,14 +944,34 @@
                 const header = document.getElementById('app-header');
                 const mobileTabbar = document.getElementById('mobile-tabbar');
                 const settingsBtn = document.getElementById('settings-float-btn');
+                const appBody = document.getElementById('app-body');
                 
                 if (header) header.style.display = 'none';
                 if (mobileTabbar) mobileTabbar.style.display = 'none';
                 if (settingsBtn) settingsBtn.style.display = 'none';
                 
+                // 调整 app-body 的位置和样式
+                if (appBody) {
+                    appBody.style.top = '0';
+                    appBody.style.bottom = '0';
+                    appBody.style.padding = '0';
+                    appBody.style.overflow = 'hidden';
+                }
+                
+                // 调整 body 的边距
+                document.body.style.margin = '0';
+                document.body.style.padding = '0';
+                
                 // 将 quote-display 移到 body 的直接子元素
                 if (quoteDisplay) {
                     document.body.appendChild(quoteDisplay);
+                    quoteDisplay.style.display = 'flex';
+                    quoteDisplay.style.alignItems = 'center';
+                    quoteDisplay.style.justifyContent = 'center';
+                    quoteDisplay.style.minHeight = '100vh';
+                    quoteDisplay.style.background = 'transparent';
+                    quoteDisplay.style.border = 'none';
+                    quoteDisplay.style.padding = '0';
                 }
             }
             
