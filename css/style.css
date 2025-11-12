@@ -463,6 +463,7 @@ body {
 /* UI 隐藏模式 */
 body.ui-hidden .layui-header,
 body.ui-hidden .mobile-header,
+body.ui-hidden .mobile-tabbar,
 body.ui-hidden .window-toolbar,
 body.ui-hidden .quote-help,
 body.ui-hidden .layui-container,
@@ -472,12 +473,19 @@ body.ui-hidden .layui-card {
 
 body.ui-hidden .layui-body {
     top: 0;
+    bottom: 0;
     background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 body.ui-hidden #quote-mode {
     padding: 0;
     background: transparent;
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 
 body.ui-hidden .quote-display {
@@ -485,10 +493,14 @@ body.ui-hidden .quote-display {
     padding: 0;
     min-height: auto;
     background: transparent;
+    width: 100%;
+    height: auto;
 }
 
 body.ui-hidden {
     background: transparent;
+    margin: 0;
+    padding: 0;
 }
 
 /* 对齐方式 */
