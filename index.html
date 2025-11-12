@@ -22,6 +22,9 @@
             <li class="layui-nav-item" data-mode="window">
                 <a href="javascript:;">多窗口</a>
             </li>
+            <li class="layui-nav-item" data-mode="converter">
+                <a href="javascript:;">文档转换</a>
+            </li>
             <li class="layui-nav-item" data-mode="reference">
                 <a href="javascript:;">参考表</a>
             </li>
@@ -40,6 +43,10 @@
         <button class="mobile-tab-btn" data-mode="window">
             <i class="layui-icon layui-icon-layer"></i>
             <span>窗口</span>
+        </button>
+        <button class="mobile-tab-btn" data-mode="converter">
+            <i class="layui-icon layui-icon-file-b"></i>
+            <span>转换</span>
         </button>
         <button class="mobile-tab-btn" data-mode="reference">
             <i class="layui-icon layui-icon-list"></i>
@@ -135,6 +142,125 @@
                     </div>
                 </div>
                 <div id="windows-container" class="windows-container"></div>
+            </div>
+        </div>
+
+        <!-- 文档转换模式 -->
+        <div id="converter-mode" class="mode-container" style="display: none;">
+            <div class="layui-container" style="padding: 20px;">
+                <div class="layui-row layui-col-space15">
+                    <!-- 左侧：LaTeX 输入区 -->
+                    <div class="layui-col-md6 layui-col-xs12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span><i class="layui-icon layui-icon-edit"></i> LaTeX 文档编辑</span>
+                            </div>
+                            <div class="layui-card-body">
+                                <div class="layui-form" style="margin-bottom: 10px;">
+                                    <div class="layui-form-item" style="margin-bottom: 0;">
+                                        <label class="layui-form-label" style="width: 60px;">编译器</label>
+                                        <div class="layui-input-inline" style="width: 150px;">
+                                            <select id="compiler-select" lay-filter="compiler">
+                                                <option value="pdflatex" selected>pdflatex</option>
+                                                <option value="xelatex">xelatex</option>
+                                                <option value="lualatex">lualatex</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <textarea id="converter-input" class="layui-textarea" placeholder="输入完整的 LaTeX 文档代码..." rows="20" style="font-family: 'Consolas', 'Monaco', monospace; font-size: 13px;">
+\documentclass[a4paper,12pt]{article}
+\usepackage[UTF8]{ctex}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+
+\title{LaTeX 文档示例}
+\author{作者姓名}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{简介}
+
+这是一个 LaTeX 文档示例。
+
+\subsection{数学公式}
+
+行内公式：$E=mc^2$
+
+独立公式：
+$$
+\int_0^\infty e^{-x^2}dx = \frac{\sqrt{\pi}}{2}
+$$
+
+\subsection{更多示例}
+
+勾股定理：$a^2 + b^2 = c^2$
+
+二次方程求根公式：
+$$
+x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}
+$$
+
+\end{document}</textarea>
+                                <div style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                                    <button class="layui-btn layui-btn-normal" id="compile-btn">
+                                        <i class="layui-icon layui-icon-release"></i> 编译为 PDF
+                                    </button>
+                                    <button class="layui-btn layui-btn-primary" id="clear-converter-btn">
+                                        <i class="layui-icon layui-icon-delete"></i> 清空
+                                    </button>
+                                    <div class="layui-form" style="display: inline-block; margin: 0;">
+                                        <input type="checkbox" id="force-compile" lay-skin="primary" title="强制重新编译">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：PDF 预览区 -->
+                    <div class="layui-col-md6 layui-col-xs12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span><i class="layui-icon layui-icon-file-b"></i> PDF 预览</span>
+                                <div class="pdf-tools">
+                                    <button class="layui-btn layui-btn-xs layui-btn-normal" id="download-pdf-btn" disabled>
+                                        <i class="layui-icon layui-icon-download-circle"></i> 下载 PDF
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="layui-card-body" style="padding: 0; min-height: 600px;">
+                                <div id="pdf-preview" class="pdf-preview-container">
+                                    <div class="pdf-placeholder">
+                                        <i class="layui-icon layui-icon-file-b" style="font-size: 80px; color: #d2d2d2;"></i>
+                                        <p style="color: #999; margin-top: 20px;">点击"编译为 PDF"按钮开始转换</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 编译日志区域 -->
+                <div class="layui-row" id="compile-log-container" style="display: none; margin-top: 15px;">
+                    <div class="layui-col-md12">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <span><i class="layui-icon layui-icon-log"></i> 编译日志</span>
+                                <button class="layui-btn layui-btn-xs layui-btn-danger" id="close-log-btn" style="float: right;">
+                                    <i class="layui-icon layui-icon-close"></i> 关闭
+                                </button>
+                            </div>
+                            <div class="layui-card-body">
+                                <pre id="compile-log" style="background: #f5f5f5; padding: 15px; border-radius: 4px; max-height: 300px; overflow: auto; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; margin: 0;"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

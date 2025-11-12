@@ -738,6 +738,158 @@
         }
     };
 
+    // 文档转换模式
+    const ConverterMode = {
+        apiBaseUrl: 'http://39.101.165.230/compile',
+        currentPdfUrl: null,
+
+        init() {
+            const compileBtn = document.getElementById('compile-btn');
+            const clearBtn = document.getElementById('clear-converter-btn');
+            const downloadBtn = document.getElementById('download-pdf-btn');
+            const closeLogBtn = document.getElementById('close-log-btn');
+
+            // 编译按钮
+            compileBtn.addEventListener('click', () => {
+                this.compileToPdf();
+            });
+
+            // 清空按钮
+            clearBtn.addEventListener('click', () => {
+                document.getElementById('converter-input').value = '';
+            });
+
+            // 下载 PDF 按钮
+            downloadBtn.addEventListener('click', () => {
+                this.downloadPdf();
+            });
+
+            // 关闭日志按钮
+            closeLogBtn.addEventListener('click', () => {
+                document.getElementById('compile-log-container').style.display = 'none';
+            });
+        },
+
+        async compileToPdf() {
+            const input = document.getElementById('converter-input');
+            const compiler = document.getElementById('compiler-select').value;
+            const forceCompile = document.getElementById('force-compile').checked;
+            const latexContent = input.value.trim();
+
+            if (!latexContent) {
+                layui.use('layer', function() {
+                    layui.layer.msg('请输入 LaTeX 文档内容');
+                });
+                return;
+            }
+
+            // 显示加载状态
+            layui.use('layer', function() {
+                const layer = layui.layer;
+                const loadingIndex = layer.load(2, { 
+                    shade: [0.3, '#000'],
+                    content: '正在编译 PDF，请稍候...'
+                });
+
+                // 构建 API URL
+                let apiUrl = ConverterMode.apiBaseUrl + '?text=' + encodeURIComponent(latexContent);
+                apiUrl += '&command=' + compiler;
+                
+                if (forceCompile) {
+                    apiUrl += '&force=true';
+                }
+
+                // 调用 API
+                fetch(apiUrl)
+                    .then(response => {
+                        if (response.ok) {
+                            // 编译成功，返回 PDF
+                            return response.blob().then(blob => ({
+                                success: true,
+                                blob: blob
+                            }));
+                        } else {
+                            // 编译失败，返回错误日志
+                            return response.text().then(text => ({
+                                success: false,
+                                log: text,
+                                status: response.status
+                            }));
+                        }
+                    })
+                    .then(result => {
+                        layer.close(loadingIndex);
+
+                        if (result.success) {
+                            ConverterMode.displayPdf(result.blob);
+                            layer.msg('编译成功！', { icon: 1 });
+                        } else {
+                            ConverterMode.showCompileLog(result.log);
+                            layer.msg('编译失败，请查看日志', { icon: 2 });
+                        }
+                    })
+                    .catch(error => {
+                        layer.close(loadingIndex);
+                        layer.msg('网络错误: ' + error.message, { icon: 2 });
+                        console.error('编译错误:', error);
+                    });
+            });
+        },
+
+        displayPdf(blob) {
+            const pdfPreview = document.getElementById('pdf-preview');
+            const downloadBtn = document.getElementById('download-pdf-btn');
+
+            // 清除旧的 PDF
+            if (this.currentPdfUrl) {
+                URL.revokeObjectURL(this.currentPdfUrl);
+            }
+
+            // 创建新的 Blob URL
+            this.currentPdfUrl = URL.createObjectURL(blob);
+
+            // 显示 PDF
+            pdfPreview.innerHTML = `
+                <iframe src="${this.currentPdfUrl}" type="application/pdf"></iframe>
+            `;
+
+            // 启用下载按钮
+            downloadBtn.disabled = false;
+
+            // 隐藏日志
+            document.getElementById('compile-log-container').style.display = 'none';
+        },
+
+        showCompileLog(log) {
+            const logContainer = document.getElementById('compile-log-container');
+            const logElement = document.getElementById('compile-log');
+
+            logElement.textContent = log;
+            logContainer.style.display = 'block';
+
+            // 滚动到日志区域
+            logContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        },
+
+        downloadPdf() {
+            if (!this.currentPdfUrl) {
+                layui.use('layer', function() {
+                    layui.layer.msg('没有可下载的 PDF');
+                });
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.href = this.currentPdfUrl;
+            link.download = 'latex-document-' + Date.now() + '.pdf';
+            link.click();
+
+            layui.use('layer', function() {
+                layui.layer.msg('PDF 下载已开始');
+            });
+        }
+    };
+
     // 网站引入模式
     const QuoteMode = {
         init() {
@@ -905,6 +1057,7 @@
                 // 初始化各个模式
                 EditorMode.init();
                 WindowMode.init();
+                ConverterMode.init();
                 QuoteMode.init();
                 
                 // PC 版导航切换
@@ -965,6 +1118,8 @@
                 mode === 'editor' ? 'block' : 'none';
             document.getElementById('window-mode').style.display = 
                 mode === 'window' ? 'block' : 'none';
+            document.getElementById('converter-mode').style.display = 
+                mode === 'converter' ? 'block' : 'none';
             document.getElementById('reference-mode').style.display = 
                 mode === 'reference' ? 'block' : 'none';
             document.getElementById('quote-mode').style.display = 
