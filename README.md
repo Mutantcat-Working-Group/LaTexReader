@@ -23,7 +23,7 @@
   - 通过 URL 参数分享：`?mode=quote&base64=编码内容`
   - 通过网络文件加载：`?mode=quote&url=文件链接`
   - 支持 `ui=none` 隐藏界面只显示公式，`fontsize=20` 自定义字体，`align=center` 设置对齐
-  - `ui=none` 时非常方便在自己的网站、博客、文档中引入，当然我们支持您这样做
+  - `ui=none` 时只显示公式或文档内容，非常方便在自己的网站、博客、文档中引入，当然我们支持您这样做
 ![无UI模式](https://s2.loli.net/2025/11/12/qlRi3YcvCPheG4m.png)
 - 手机端使用底部 TabBar 快速切换模式，多窗口模式在手机上自动禁用
 
