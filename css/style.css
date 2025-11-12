@@ -109,6 +109,15 @@ body {
     z-index: 100;
     margin-bottom: 0;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.toolbar-left,
+.toolbar-right {
+    display: flex;
     gap: 8px;
     flex-wrap: wrap;
 }

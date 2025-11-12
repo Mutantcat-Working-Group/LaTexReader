@@ -77,24 +77,28 @@
         <!-- 多窗口模式 -->
         <div id="window-mode" class="mode-container" style="display: none;">
             <div class="window-toolbar">
-                <button class="layui-btn layui-btn-sm" id="new-window-btn">
-                    <i class="layui-icon layui-icon-addition"></i> 新建窗口
-                </button>
-                <button class="layui-btn layui-btn-sm layui-btn-primary" id="all-edit-btn">
-                    <i class="layui-icon layui-icon-edit"></i> 全部编辑
-                </button>
-                <button class="layui-btn layui-btn-sm layui-btn-primary" id="all-preview-btn">
-                    <i class="layui-icon layui-icon-read"></i> 全部预览
-                </button>
-                <button class="layui-btn layui-btn-sm" id="temp-preview-btn">
-                    <i class="layui-icon layui-icon-close-fill"></i> 临时预览
-                </button>
-                <button class="layui-btn layui-btn-sm layui-btn-normal" id="export-mlatex">
-                    <i class="layui-icon layui-icon-export"></i> 导出 MLATEX
-                </button>
-                <button class="layui-btn layui-btn-sm layui-btn-warm" id="import-mlatex">
-                    <i class="layui-icon layui-icon-file"></i> 导入 MLATEX
-                </button>
+                <div class="toolbar-left">
+                    <button class="layui-btn layui-btn-sm" id="new-window-btn">
+                        <i class="layui-icon layui-icon-addition"></i> 新建窗口
+                    </button>
+                    <button class="layui-btn layui-btn-sm" id="temp-preview-btn">
+                        <i class="layui-icon layui-icon-close-fill"></i> 临时预览
+                    </button>
+                    <button class="layui-btn layui-btn-sm layui-btn-primary" id="all-edit-btn">
+                        <i class="layui-icon layui-icon-edit"></i> 全部编辑
+                    </button>
+                    <button class="layui-btn layui-btn-sm layui-btn-primary" id="all-preview-btn">
+                        <i class="layui-icon layui-icon-read"></i> 全部预览
+                    </button>
+                </div>
+                <div class="toolbar-right">
+                    <button class="layui-btn layui-btn-sm layui-btn-warm" id="import-mlatex">
+                        <i class="layui-icon layui-icon-file"></i> 导入 MLATEX
+                    </button>
+                    <button class="layui-btn layui-btn-sm layui-btn-normal" id="export-mlatex">
+                        <i class="layui-icon layui-icon-export"></i> 导出 MLATEX
+                    </button>
+                </div>
             </div>
             <div id="windows-container" class="windows-container"></div>
         </div>
