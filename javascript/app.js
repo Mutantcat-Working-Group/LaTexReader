@@ -63,8 +63,8 @@
                 
                 // 添加样式和脚本
                 if (!document.querySelector('#latex-styles')) {
-                    const styles = generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.12.4/dist/");
-                    // const styles = generator.stylesAndScripts("//latexreader.mutantcat.org/latax_base");
+                    // const styles = generator.stylesAndScripts("https://https://latexreader.mutantcat.org//dist/");
+                    const styles = generator.stylesAndScripts("https://latexreader.mutantcat.org/latax_base");
                     styles.id = 'latex-styles';
                     document.head.appendChild(styles);
                 }
