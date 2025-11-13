@@ -65,7 +65,7 @@
                 if (!document.querySelector('#latex-styles')) {
                     // const styles = generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.12.4/dist/");
                     // 使用自托管的样式文件以防 CDN 失效
-                    const styles = generator.stylesAndScripts("https://latexreader.mutantcat.org/latex_base");
+                    const styles = generator.stylesAndScripts("https://latexreader.mutantcat.org/");
                     styles.id = 'latex-styles';
                     document.head.appendChild(styles);
                 }
