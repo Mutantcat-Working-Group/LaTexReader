@@ -373,16 +373,31 @@ body {
     border-radius: 6px;
 }
 
-.quote-help .layui-form-label {
-    font-weight: 500;
+.quote-help .layui-form-item {
+    display: flex;
+    align-items: flex-start;
 }
 
 .quote-help .layui-form-label {
-    width: 120px;
+    font-weight: 500;
+    width: 100px !important;
+    padding: 9px 15px !important;
+    float: none !important;
+    display: inline-block !important;
+    text-align: right !important;
+    flex-shrink: 0;
 }
 
 .quote-help .layui-input-block {
-    margin-left: 140px;
+    margin-left: 0 !important;
+    flex: 1;
+    display: inline-block !important;
+}
+
+.quote-help .layui-input-block .layui-textarea,
+.quote-help .layui-input-block .layui-input {
+    width: 100% !important;
+    box-sizing: border-box;
 }
 
 #encode-input {
@@ -933,20 +948,16 @@ body.ui-hidden {
         border-radius: 4px;
     }
     
-    .quote-help .layui-form-label {
-        width: auto;
-        display: block;
-        margin-bottom: 8px;
-    }
-    
     .quote-help .layui-form-item {
+        display: block !important;
         margin-bottom: 12px;
     }
     
     .quote-help .layui-form-label {
-        width: auto;
-        display: block;
+        width: auto !important;
+        display: block !important;
         margin-bottom: 8px;
+        text-align: left !important;
     }
     
     .quote-help .layui-input-block {
