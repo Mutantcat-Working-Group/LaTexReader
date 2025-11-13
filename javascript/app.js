@@ -102,6 +102,10 @@
             const zoomIn = document.getElementById('zoom-in');
             const zoomOut = document.getElementById('zoom-out');
             const saveImage = document.getElementById('save-image');
+            const saveTex = document.getElementById('save-tex');
+            const loadSampleBtn = document.getElementById('load-sample-btn');
+            const importTexBtn = document.getElementById('import-tex-btn');
+            const texFileInput = document.getElementById('tex-file-input');
             const fontSizeDisplay = document.getElementById('font-size-display');
             
             // 检查 URL 参数，加载外部数据
@@ -132,8 +136,27 @@
                 this.saveAsImage();
             });
             
+            // 保存 TEX 功能
+            saveTex.addEventListener('click', () => {
+                this.saveAsTex();
+            });
+            
+            // 加载文档示例
+            loadSampleBtn.addEventListener('click', () => {
+                this.loadSampleDocument();
+            });
+            
+            // 导入 TEX 文件
+            importTexBtn.addEventListener('click', () => {
+                texFileInput.click();
+            });
+            
+            texFileInput.addEventListener('change', (e) => {
+                this.importTexFile(e);
+            });
+            
             // 快捷工具按钮
-            document.querySelectorAll('.quick-tools button').forEach(btn => {
+            document.querySelectorAll('.quick-tools button[data-latex]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const latex = btn.getAttribute('data-latex');
                     if (latex) {
@@ -222,6 +245,116 @@
                     layer.msg('保存失败: ' + err.message);
                 });
             });
+        },
+        
+        saveAsTex() {
+            const input = document.getElementById('latex-input');
+            const content = input.value;
+            
+            if (!content.trim()) {
+                layui.use('layer', function() {
+                    layui.layer.msg('内容为空，无法保存');
+                });
+                return;
+            }
+            
+            // 创建 Blob 对象
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            
+            // 创建下载链接
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'latex-' + Date.now() + '.tex';
+            link.click();
+            
+            // 释放 URL 对象
+            URL.revokeObjectURL(link.href);
+            
+            layui.use('layer', function() {
+                layui.layer.msg('TEX 文件已保存', { icon: 1 });
+            });
+        },
+        
+        loadSampleDocument() {
+            const input = document.getElementById('latex-input');
+            
+            const sampleDoc = `\\documentclass[]{article}
+\\usepackage[T1]{fontenc}
+\\usepackage{lmodern}
+\\usepackage{amssymb,amsmath}
+\\usepackage[a4paper]{geometry}
+
+\\title{Sample LaTeX Document}
+\\author{Mutantcat LaTeX Reader}
+\\date{\\today}
+
+\\begin{document}
+
+\\maketitle
+
+\\section{Introduction}
+
+This is a sample LaTeX document that demonstrates basic formatting.
+
+\\section{Mathematical Formulas}
+
+Einstein's famous equation:
+\\[ E=mc^2 \\]
+
+The quadratic formula:
+\\[ x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a} \\]
+
+A calculus example:
+\\[ \\int_0^\\infty e^{-x^2}dx = \\frac{\\sqrt{\\pi}}{2} \\]
+
+\\section{Lists}
+
+\\begin{itemize}
+    \\item First item
+    \\item Second item
+    \\item Third item
+\\end{itemize}
+
+\\section{Conclusion}
+
+This is the end of the sample document.
+
+\\end{document}`;
+
+            input.value = sampleDoc;
+            this.render();
+            
+            layui.use('layer', function() {
+                layui.layer.msg('已加载文档示例', { icon: 1 });
+            });
+        },
+        
+        importTexFile(event) {
+            const input = document.getElementById('latex-input');
+            const file = event.target.files[0];
+            
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                input.value = e.target.result;
+                this.render();
+                
+                layui.use('layer', function() {
+                    layui.layer.msg('文件导入成功: ' + file.name, { icon: 1 });
+                });
+            };
+            
+            reader.onerror = () => {
+                layui.use('layer', function() {
+                    layui.layer.msg('文件读取失败', { icon: 2 });
+                });
+            };
+            
+            reader.readAsText(file);
+            
+            // 清空 input，允许重复选择同一文件
+            event.target.value = '';
         }
     };
 
@@ -849,7 +982,7 @@
 \\usepackage[a4paper]{geometry}
 
 \\title{Sample LaTeX Document}
-\\author{LaTeX Reader}
+\\author{Mutantcat LaTeX Reader}
 \\date{\\today}
 
 \\begin{document}

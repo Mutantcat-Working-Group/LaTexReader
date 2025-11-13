@@ -750,6 +750,26 @@ body.ui-hidden {
         white-space: nowrap;
     }
     
+    /* 缩放控制和显示放在第一行 */
+    .result-tools #zoom-out,
+    .result-tools #zoom-in,
+    .result-tools #font-size-display {
+        order: 1;
+    }
+    
+    /* 保存按钮放在第二行 */
+    .result-tools #save-image,
+    .result-tools #save-tex {
+        order: 2;
+        flex: 1 1 45%;
+        max-width: 48%;
+    }
+    
+    #font-size-display {
+        order: 1;
+        padding: 0 8px;
+    }
+    
     .editor-container {
         padding: 10px;
         max-width: 100%;
