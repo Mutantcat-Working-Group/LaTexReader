@@ -221,17 +221,30 @@
         },
         
         insertAtCursor(textarea, text) {
-            const startPos = textarea.selectionStart;
-            const endPos = textarea.selectionEnd;
-            const textBefore = textarea.value.substring(0, startPos);
-            const textAfter = textarea.value.substring(endPos);
+            // 先聚焦到 textarea
+            textarea.focus();
             
-            // 插入文本
-            textarea.value = textBefore + text + textAfter;
-            
-            // 设置光标位置到插入文本之后
-            const newCursorPos = startPos + text.length;
-            textarea.setSelectionRange(newCursorPos, newCursorPos);
+            // 使用 document.execCommand 支持撤销操作
+            if (document.execCommand) {
+                document.execCommand('insertText', false, text);
+            } else {
+                // 降级方案：手动插入并触发 input 事件
+                const startPos = textarea.selectionStart;
+                const endPos = textarea.selectionEnd;
+                const textBefore = textarea.value.substring(0, startPos);
+                const textAfter = textarea.value.substring(endPos);
+                
+                // 插入文本
+                textarea.value = textBefore + text + textAfter;
+                
+                // 设置光标位置到插入文本之后
+                const newCursorPos = startPos + text.length;
+                textarea.setSelectionRange(newCursorPos, newCursorPos);
+                
+                // 触发 input 事件以支持撤销栈
+                const event = new Event('input', { bubbles: true, cancelable: true });
+                textarea.dispatchEvent(event);
+            }
         },
 
         saveAsImage() {
