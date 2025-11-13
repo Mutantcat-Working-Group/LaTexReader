@@ -30,6 +30,7 @@
 - 全部编辑/预览模式切换
 - 临时预览功能
 ![多窗口模式](https://s2.loli.net/2025/11/12/WamSEFcjnOHYobQ.png)
+![多窗口模式](https://s2.loli.net/2025/11/13/C7sIkWBqL38MvaP.png)
 
 #### 3. 文档转换模式
 - **三种输入方式**：
