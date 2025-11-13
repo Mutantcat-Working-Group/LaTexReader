@@ -160,7 +160,7 @@
                 btn.addEventListener('click', () => {
                     const latex = btn.getAttribute('data-latex');
                     if (latex) {
-                        input.value += ' ' + latex + ' ';
+                        this.insertAtCursor(input, ' ' + latex + ' ');
                         input.focus();
                         this.render();
                     }
@@ -218,6 +218,20 @@
             
             output.style.fontSize = (AppState.editorFontSize / 100 * 16) + 'px';
             fontSizeDisplay.textContent = AppState.editorFontSize + '%';
+        },
+        
+        insertAtCursor(textarea, text) {
+            const startPos = textarea.selectionStart;
+            const endPos = textarea.selectionEnd;
+            const textBefore = textarea.value.substring(0, startPos);
+            const textAfter = textarea.value.substring(endPos);
+            
+            // 插入文本
+            textarea.value = textBefore + text + textAfter;
+            
+            // 设置光标位置到插入文本之后
+            const newCursorPos = startPos + text.length;
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
         },
 
         saveAsImage() {
