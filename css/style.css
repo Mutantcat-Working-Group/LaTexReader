@@ -431,6 +431,12 @@ body {
     align-items: flex-start;
 }
 
+/* 下拉框选项不使用 flex 布局 */
+#converter-mode .layui-form-select dl dd,
+#converter-mode .layui-form-select dl dt {
+    display: block !important;
+}
+
 #converter-mode .layui-form-label {
     width: 100px !important;
     padding: 9px 15px !important;
@@ -983,6 +989,12 @@ body.ui-hidden {
     #converter-mode .layui-form-item {
         display: flex;
         align-items: flex-start;
+    }
+    
+    /* 下拉框选项不使用 flex 布局 */
+    #converter-mode .layui-form-select dl dd,
+    #converter-mode .layui-form-select dl dt {
+        display: block !important;
     }
     
     #converter-mode .layui-form-label {

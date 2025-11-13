@@ -224,7 +224,7 @@
                                 <div class="layui-input-block">
                                     <select name="api-server">
                                         <option value="https://latexonline.cc/compile" selected>latexonline.cc（官方）</option>
-                                        <option value="http://39.101.165.230/compile">备用服务器</option>
+                                        <option value="http://39.101.165.230/compile">备用服务器（仅HTTP）</option>
                                     </select>
                                 </div>
                             </div>
@@ -248,12 +248,12 @@
 
                             <!-- 提交按钮 -->
                             <div class="layui-form-item">
-                                <div class="layui-input-block">
-                                    <button type="button" class="layui-btn layui-btn-lg" id="convert-btn">
-                                        <i class="layui-icon layui-icon-release"></i> 生成 PDF
-                                    </button>
+                                <div class="layui-input-block" style="text-align: right;">
                                     <button type="reset" class="layui-btn layui-btn-lg layui-btn-primary">
                                         <i class="layui-icon layui-icon-refresh"></i> 重置
+                                    </button>
+                                    <button type="button" class="layui-btn layui-btn-lg" id="convert-btn">
+                                        <i class="layui-icon layui-icon-release"></i> 生成 PDF
                                     </button>
                                 </div>
                             </div>

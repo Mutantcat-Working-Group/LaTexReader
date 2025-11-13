@@ -894,71 +894,82 @@ This is the end of the sample document.
             layui.use('layer', function() {
                 const layer = layui.layer;
                 
-                // 获取表单数据
-                const mode = document.querySelector('input[name="compile-mode"]:checked').value;
-                const apiServer = document.querySelector('select[name="api-server"]').value;
-                const command = document.querySelector('select[name="command"]').value;
-                const force = document.querySelector('input[name="force"]').checked;
-                const download = document.querySelector('input[name="download"]').checked;
-                const downloadName = document.querySelector('input[name="download-name"]').value || 'output.pdf';
-                
-                // 构建 API URL
-                let apiUrl = apiServer;
-                const params = new URLSearchParams();
-                
-                // 根据模式添加参数
-                if (mode === 'text') {
-                    const content = document.getElementById('latex-content').value.trim();
-                    if (!content) {
-                        layer.msg('请输入 LaTeX 内容');
-                        return;
+                // 先显示确认提示
+                layer.confirm('API 编译服务有一定成本，请合理使用，禁止滥用！<br>您确定要继续生成 PDF 吗？', {
+                    icon: 3,
+                    title: '温馨提示',
+                    btn: ['确定生成', '取消'],
+                    closeBtn: 1
+                }, function(confirmIndex) {
+                    // 用户点击确定后，关闭确认框并继续执行
+                    layer.close(confirmIndex);
+                    
+                    // 获取表单数据
+                    const mode = document.querySelector('input[name="compile-mode"]:checked').value;
+                    const apiServer = document.querySelector('select[name="api-server"]').value;
+                    const command = document.querySelector('select[name="command"]').value;
+                    const force = document.querySelector('input[name="force"]').checked;
+                    const download = document.querySelector('input[name="download"]').checked;
+                    const downloadName = document.querySelector('input[name="download-name"]').value || 'output.pdf';
+                    
+                    // 构建 API URL
+                    let apiUrl = apiServer;
+                    const params = new URLSearchParams();
+                    
+                    // 根据模式添加参数
+                    if (mode === 'text') {
+                        const content = document.getElementById('latex-content').value.trim();
+                        if (!content) {
+                            layer.msg('请输入 LaTeX 内容');
+                            return;
+                        }
+                        params.append('text', content);
+                    } else if (mode === 'url') {
+                        const url = document.querySelector('input[name="url"]').value.trim();
+                        if (!url) {
+                            layer.msg('请输入文档 URL');
+                            return;
+                        }
+                        params.append('url', url);
+                    } else if (mode === 'git') {
+                        const git = document.querySelector('input[name="git"]').value.trim();
+                        const target = document.querySelector('input[name="target"]').value.trim();
+                        if (!git || !target) {
+                            layer.msg('请输入 Git 仓库地址和目标文件');
+                            return;
+                        }
+                        params.append('git', git);
+                        params.append('target', target);
                     }
-                    params.append('text', content);
-                } else if (mode === 'url') {
-                    const url = document.querySelector('input[name="url"]').value.trim();
-                    if (!url) {
-                        layer.msg('请输入文档 URL');
-                        return;
+                    
+                    // 添加编译引擎
+                    if (command !== 'pdflatex') {
+                        params.append('command', command);
                     }
-                    params.append('url', url);
-                } else if (mode === 'git') {
-                    const git = document.querySelector('input[name="git"]').value.trim();
-                    const target = document.querySelector('input[name="target"]').value.trim();
-                    if (!git || !target) {
-                        layer.msg('请输入 Git 仓库地址和目标文件');
-                        return;
+                    
+                    // 添加强制编译
+                    if (force) {
+                        params.append('force', 'true');
                     }
-                    params.append('git', git);
-                    params.append('target', target);
-                }
-                
-                // 添加编译引擎
-                if (command !== 'pdflatex') {
-                    params.append('command', command);
-                }
-                
-                // 添加强制编译
-                if (force) {
-                    params.append('force', 'true');
-                }
-                
-                // 添加下载参数
-                if (download) {
-                    params.append('download', downloadName);
-                }
-                
-                // 完整 URL
-                const fullUrl = apiUrl + '?' + params.toString();
-                
-                // 显示提示信息
-                layer.msg('正在新标签页中打开编译服务...', { 
-                    icon: 16,
-                    time: 2000 
+                    
+                    // 添加下载参数
+                    if (download) {
+                        params.append('download', downloadName);
+                    }
+                    
+                    // 完整 URL
+                    const fullUrl = apiUrl + '?' + params.toString();
+                    
+                    // 显示提示信息
+                    layer.msg('正在新标签页中打开编译服务...', { 
+                        icon: 16,
+                        time: 2000 
+                    });
+                    
+                    // 直接在新窗口打开完整的 API URL
+                    // 浏览器会自动处理 PDF 的显示或下载
+                    window.open(fullUrl, '_blank');
                 });
-                
-                // 直接在新窗口打开完整的 API URL
-                // 浏览器会自动处理 PDF 的显示或下载
-                window.open(fullUrl, '_blank');
             });
         }
     };
