@@ -740,152 +740,225 @@
 
     // 文档转换模式
     const ConverterMode = {
-        apiBaseUrl: 'http://39.101.165.230/compile',
-        currentPdfUrl: null,
-
         init() {
-            const compileBtn = document.getElementById('compile-btn');
-            const clearBtn = document.getElementById('clear-converter-btn');
-            const downloadBtn = document.getElementById('download-pdf-btn');
-            const closeLogBtn = document.getElementById('close-log-btn');
-
-            // 编译按钮
-            compileBtn.addEventListener('click', () => {
-                this.compileToPdf();
+            const form = document.getElementById('converter-form');
+            const convertBtn = document.getElementById('convert-btn');
+            const loadSampleBtn = document.getElementById('load-sample');
+            const uploadTexBtn = document.getElementById('upload-tex');
+            const texFileInput = document.getElementById('tex-file-input');
+            
+            // 编译模式切换
+            layui.use('form', function() {
+                const layuiForm = layui.form;
+                
+                layuiForm.on('radio(compile-mode)', function(data) {
+                    // 这个事件可能不会触发，所以我们用change事件
+                });
+                
+                // 监听下载复选框
+                layuiForm.on('checkbox(download)', function(data) {
+                    const downloadNameArea = document.getElementById('download-name-area');
+                    if (data.elem.checked) {
+                        downloadNameArea.style.display = '';
+                    } else {
+                        downloadNameArea.style.display = 'none';
+                    }
+                });
             });
-
-            // 清空按钮
-            clearBtn.addEventListener('click', () => {
-                document.getElementById('converter-input').value = '';
+            
+            // 手动监听编译模式变化
+            const modeRadios = document.querySelectorAll('input[name="compile-mode"]');
+            modeRadios.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    this.switchCompileMode(e.target.value);
+                });
             });
-
-            // 下载 PDF 按钮
-            downloadBtn.addEventListener('click', () => {
-                this.downloadPdf();
+            
+            // 监听下载复选框
+            const downloadCheckbox = document.querySelector('input[name="download"]');
+            if (downloadCheckbox) {
+                downloadCheckbox.addEventListener('change', (e) => {
+                    const downloadNameArea = document.getElementById('download-name-area');
+                    if (e.target.checked) {
+                        downloadNameArea.style.display = '';
+                    } else {
+                        downloadNameArea.style.display = 'none';
+                    }
+                });
+            }
+            
+            // 加载示例文档
+            loadSampleBtn.addEventListener('click', () => {
+                this.loadSampleDocument();
             });
-
-            // 关闭日志按钮
-            closeLogBtn.addEventListener('click', () => {
-                document.getElementById('compile-log-container').style.display = 'none';
+            
+            // 上传 .tex 文件
+            uploadTexBtn.addEventListener('click', () => {
+                texFileInput.click();
+            });
+            
+            texFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        document.getElementById('latex-content').value = event.target.result;
+                        layui.use('layer', function() {
+                            layui.layer.msg('文件加载成功');
+                        });
+                    };
+                    reader.readAsText(file);
+                }
+            });
+            
+            // 生成 PDF
+            convertBtn.addEventListener('click', () => {
+                this.convertToPDF();
             });
         },
-
-        async compileToPdf() {
-            const input = document.getElementById('converter-input');
-            const compiler = document.getElementById('compiler-select').value;
-            const forceCompile = document.getElementById('force-compile').checked;
-            const latexContent = input.value.trim();
-
-            if (!latexContent) {
-                layui.use('layer', function() {
-                    layui.layer.msg('请输入 LaTeX 文档内容');
-                });
-                return;
+        
+        switchCompileMode(mode) {
+            const textArea = document.getElementById('text-input-area');
+            const urlArea = document.getElementById('url-input-area');
+            const gitArea = document.getElementById('git-input-area');
+            const gitTargetArea = document.getElementById('git-target-area');
+            
+            // 隐藏所有区域
+            textArea.style.display = 'none';
+            urlArea.style.display = 'none';
+            gitArea.style.display = 'none';
+            gitTargetArea.style.display = 'none';
+            
+            // 显示对应区域（使用空字符串让 CSS 样式生效）
+            if (mode === 'text') {
+                textArea.style.display = '';
+            } else if (mode === 'url') {
+                urlArea.style.display = '';
+            } else if (mode === 'git') {
+                gitArea.style.display = '';
+                gitTargetArea.style.display = '';
             }
+        },
+        
+        loadSampleDocument() {
+            const sample = `\\documentclass[]{article}
+\\usepackage[T1]{fontenc}
+\\usepackage{lmodern}
+\\usepackage{amssymb,amsmath}
+\\usepackage[a4paper]{geometry}
 
-            // 显示加载状态
+\\title{Sample LaTeX Document}
+\\author{LaTeX Reader}
+\\date{\\today}
+
+\\begin{document}
+
+\\maketitle
+
+\\section{Introduction}
+
+This is a sample LaTeX document that demonstrates basic formatting.
+
+\\section{Mathematical Formulas}
+
+Einstein's famous equation:
+\\[ E=mc^2 \\]
+
+The quadratic formula:
+\\[ x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a} \\]
+
+A calculus example:
+\\[ \\int_0^\\infty e^{-x^2}dx = \\frac{\\sqrt{\\pi}}{2} \\]
+
+\\section{Lists}
+
+\\begin{itemize}
+    \\item First item
+    \\item Second item
+    \\item Third item
+\\end{itemize}
+
+\\section{Conclusion}
+
+This is the end of the sample document.
+
+\\end{document}`;
+            
+            document.getElementById('latex-content').value = sample;
+            layui.use('layer', function() {
+                layui.layer.msg('示例文档已加载');
+            });
+        },
+        
+        convertToPDF() {
             layui.use('layer', function() {
                 const layer = layui.layer;
-                const loadingIndex = layer.load(2, { 
-                    shade: [0.3, '#000'],
-                    content: '正在编译 PDF，请稍候...'
-                });
-
-                // 构建 API URL
-                let apiUrl = ConverterMode.apiBaseUrl + '?text=' + encodeURIComponent(latexContent);
-                apiUrl += '&command=' + compiler;
                 
-                if (forceCompile) {
-                    apiUrl += '&force=true';
+                // 获取表单数据
+                const mode = document.querySelector('input[name="compile-mode"]:checked').value;
+                const apiServer = document.querySelector('select[name="api-server"]').value;
+                const command = document.querySelector('select[name="command"]').value;
+                const force = document.querySelector('input[name="force"]').checked;
+                const download = document.querySelector('input[name="download"]').checked;
+                const downloadName = document.querySelector('input[name="download-name"]').value || 'output.pdf';
+                
+                // 构建 API URL
+                let apiUrl = apiServer;
+                const params = new URLSearchParams();
+                
+                // 根据模式添加参数
+                if (mode === 'text') {
+                    const content = document.getElementById('latex-content').value.trim();
+                    if (!content) {
+                        layer.msg('请输入 LaTeX 内容');
+                        return;
+                    }
+                    params.append('text', content);
+                } else if (mode === 'url') {
+                    const url = document.querySelector('input[name="url"]').value.trim();
+                    if (!url) {
+                        layer.msg('请输入文档 URL');
+                        return;
+                    }
+                    params.append('url', url);
+                } else if (mode === 'git') {
+                    const git = document.querySelector('input[name="git"]').value.trim();
+                    const target = document.querySelector('input[name="target"]').value.trim();
+                    if (!git || !target) {
+                        layer.msg('请输入 Git 仓库地址和目标文件');
+                        return;
+                    }
+                    params.append('git', git);
+                    params.append('target', target);
                 }
-
-                // 调用 API
-                fetch(apiUrl)
-                    .then(response => {
-                        if (response.ok) {
-                            // 编译成功，返回 PDF
-                            return response.blob().then(blob => ({
-                                success: true,
-                                blob: blob
-                            }));
-                        } else {
-                            // 编译失败，返回错误日志
-                            return response.text().then(text => ({
-                                success: false,
-                                log: text,
-                                status: response.status
-                            }));
-                        }
-                    })
-                    .then(result => {
-                        layer.close(loadingIndex);
-
-                        if (result.success) {
-                            ConverterMode.displayPdf(result.blob);
-                            layer.msg('编译成功！', { icon: 1 });
-                        } else {
-                            ConverterMode.showCompileLog(result.log);
-                            layer.msg('编译失败，请查看日志', { icon: 2 });
-                        }
-                    })
-                    .catch(error => {
-                        layer.close(loadingIndex);
-                        layer.msg('网络错误: ' + error.message, { icon: 2 });
-                        console.error('编译错误:', error);
-                    });
-            });
-        },
-
-        displayPdf(blob) {
-            const pdfPreview = document.getElementById('pdf-preview');
-            const downloadBtn = document.getElementById('download-pdf-btn');
-
-            // 清除旧的 PDF
-            if (this.currentPdfUrl) {
-                URL.revokeObjectURL(this.currentPdfUrl);
-            }
-
-            // 创建新的 Blob URL
-            this.currentPdfUrl = URL.createObjectURL(blob);
-
-            // 显示 PDF
-            pdfPreview.innerHTML = `
-                <iframe src="${this.currentPdfUrl}" type="application/pdf"></iframe>
-            `;
-
-            // 启用下载按钮
-            downloadBtn.disabled = false;
-
-            // 隐藏日志
-            document.getElementById('compile-log-container').style.display = 'none';
-        },
-
-        showCompileLog(log) {
-            const logContainer = document.getElementById('compile-log-container');
-            const logElement = document.getElementById('compile-log');
-
-            logElement.textContent = log;
-            logContainer.style.display = 'block';
-
-            // 滚动到日志区域
-            logContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        },
-
-        downloadPdf() {
-            if (!this.currentPdfUrl) {
-                layui.use('layer', function() {
-                    layui.layer.msg('没有可下载的 PDF');
+                
+                // 添加编译引擎
+                if (command !== 'pdflatex') {
+                    params.append('command', command);
+                }
+                
+                // 添加强制编译
+                if (force) {
+                    params.append('force', 'true');
+                }
+                
+                // 添加下载参数
+                if (download) {
+                    params.append('download', downloadName);
+                }
+                
+                // 完整 URL
+                const fullUrl = apiUrl + '?' + params.toString();
+                
+                // 显示提示信息
+                layer.msg('正在新标签页中打开编译服务...', { 
+                    icon: 16,
+                    time: 2000 
                 });
-                return;
-            }
-
-            const link = document.createElement('a');
-            link.href = this.currentPdfUrl;
-            link.download = 'latex-document-' + Date.now() + '.pdf';
-            link.click();
-
-            layui.use('layer', function() {
-                layui.layer.msg('PDF 下载已开始');
+                
+                // 直接在新窗口打开完整的 API URL
+                // 浏览器会自动处理 PDF 的显示或下载
+                window.open(fullUrl, '_blank');
             });
         }
     };

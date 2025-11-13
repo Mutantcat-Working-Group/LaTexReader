@@ -377,11 +377,11 @@ body {
     font-weight: 500;
 }
 
-.layui-form-label {
+.quote-help .layui-form-label {
     width: 120px;
 }
 
-.layui-input-block {
+.quote-help .layui-input-block {
     margin-left: 140px;
 }
 
@@ -406,6 +406,86 @@ body {
 
 #local-file-input {
     display: none;
+}
+
+/* 文档转换模式样式 */
+#converter-mode {
+    padding: 20px;
+}
+
+#converter-mode .layui-card {
+    margin-bottom: 0;
+}
+
+#converter-mode .layui-card-header h2 {
+    font-size: 24px;
+    color: #333;
+}
+
+#converter-mode .layui-form {
+    margin-top: 20px;
+}
+
+#converter-mode .layui-form-item {
+    display: flex;
+    align-items: flex-start;
+}
+
+#converter-mode .layui-form-label {
+    width: 100px !important;
+    padding: 9px 15px !important;
+    float: none !important;
+    display: inline-block !important;
+    text-align: right !important;
+    flex-shrink: 0;
+}
+
+#converter-mode .layui-input-block {
+    margin-left: 0 !important;
+    flex: 1;
+    display: inline-block !important;
+}
+
+/* 确保 textarea 和 input 占满容器宽度 */
+#converter-mode .layui-input-block .layui-textarea,
+#converter-mode .layui-input-block .layui-input,
+#converter-mode .layui-input-block select {
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+#converter-mode textarea {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.converter-help {
+    background: #f8f9fa;
+    border-left: 4px solid #1E9FFF;
+}
+
+.converter-help h3 {
+    color: #1E9FFF;
+    font-size: 18px;
+}
+
+.converter-help ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.converter-help li {
+    margin: 8px 0;
+}
+
+.converter-help code {
+    background: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #e83e8c;
+    border: 1px solid #e6e6e6;
 }
 
 /* 参考表模式样式 */
@@ -514,70 +594,6 @@ body.ui-hidden {
 
 .align-right {
     text-align: right;
-}
-
-/* 文档转换模式样式 */
-#converter-mode .layui-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.pdf-tools button {
-    margin-left: 5px;
-}
-
-.pdf-preview-container {
-    min-height: 600px;
-    background: #f5f5f5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.pdf-placeholder {
-    text-align: center;
-    padding: 40px;
-}
-
-.pdf-preview-container iframe {
-    width: 100%;
-    height: 600px;
-    border: none;
-}
-
-#converter-input {
-    resize: vertical;
-    min-height: 400px;
-}
-
-.converter-buttons-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    margin-top: 10px;
-}
-
-#compile-log-container .layui-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#compile-log {
-    color: #333;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-#converter-mode .layui-form-label {
-    width: 80px;
-}
-
-#converter-mode .layui-input-block {
-    margin-left: 100px;
 }
 
 /* 手机版底部 TabBar 导航 */
@@ -917,17 +933,17 @@ body.ui-hidden {
         margin-bottom: 8px;
     }
     
-    .layui-form-item {
+    .quote-help .layui-form-item {
         margin-bottom: 12px;
     }
     
-    .layui-form-label {
+    .quote-help .layui-form-label {
         width: auto;
         display: block;
         margin-bottom: 8px;
     }
     
-    .layui-input-block {
+    .quote-help .layui-input-block {
         margin-left: 0 !important;
     }
     
@@ -956,54 +972,63 @@ body.ui-hidden {
     }
     
     /* 文档转换模式适配 */
-    #converter-mode .layui-container {
+    #converter-mode {
         padding: 10px;
     }
     
-    #converter-mode .layui-col-md6 {
-        margin-bottom: 15px;
+    #converter-mode .layui-card-header h2 {
+        font-size: 18px;
+    }
+    
+    #converter-mode .layui-form-item {
+        display: flex;
+        align-items: flex-start;
     }
     
     #converter-mode .layui-form-label {
-        width: auto;
-        display: block;
-        margin-bottom: 5px;
-        padding: 0;
+        width: 80px !important;
+        padding: 9px 10px !important;
+        float: none !important;
+        display: inline-block !important;
+        text-align: right !important;
+        flex-shrink: 0;
     }
     
     #converter-mode .layui-input-block {
-        margin-left: 0;
+        margin-left: 0 !important;
+        flex: 1;
+        display: inline-block !important;
     }
     
-    #converter-input {
+    /* 确保 textarea 和 input 占满容器宽度 */
+    #converter-mode .layui-input-block .layui-textarea,
+    #converter-mode .layui-input-block .layui-input,
+    #converter-mode .layui-input-block select {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+    
+    #converter-mode textarea {
         font-size: 12px;
-        min-height: 250px;
+        min-height: 200px;
     }
     
-    .pdf-preview-container {
-        min-height: 400px;
-    }
-    
-    .pdf-preview-container iframe {
-        height: 400px;
-    }
-    
-    #compile-btn,
-    #clear-converter-btn,
-    #download-pdf-btn {
+    #converter-mode .layui-btn-lg {
         width: 100%;
         margin-bottom: 10px;
     }
     
-    .pdf-tools {
-        width: 100%;
-        margin-top: 10px;
+    .converter-help {
+        padding: 15px;
+        margin-top: 20px;
     }
     
-    #converter-mode .layui-card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+    .converter-help h3 {
+        font-size: 16px;
+    }
+    
+    .converter-help ul {
+        font-size: 13px;
     }
 }
 
