@@ -895,7 +895,7 @@ This is the end of the sample document.
                 const layer = layui.layer;
                 
                 // 先显示确认提示
-                layer.confirm('API 编译服务有一定成本，请合理使用，禁止滥用！<br>您确定要继续生成 PDF 吗？', {
+                layer.confirm('API 编译服务有一定成本，请合理使用，禁止滥用！<br>如发现大量滥用行为，我们可能会关闭此服务！<br>您确定要继续生成 PDF 吗？', {
                     icon: 3,
                     title: '温馨提示',
                     btn: ['确定生成', '取消'],
