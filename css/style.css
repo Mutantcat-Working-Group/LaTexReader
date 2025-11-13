@@ -418,6 +418,12 @@ body {
     margin-left: 8px;
 }
 
+/* 按钮组容器的特殊处理 - 在桌面端也让它占满宽度 */
+.quote-help .layui-form-item .encode-buttons {
+    margin-left: 0 !important;
+    text-align: right;
+}
+
 #local-file-input {
     display: none;
 }
@@ -957,10 +963,12 @@ body.ui-hidden {
         display: block !important;
         margin-bottom: 8px;
         text-align: left !important;
+        padding: 9px 0 !important;
     }
     
     .quote-help .layui-input-block {
         margin-left: 0 !important;
+        display: block !important;
     }
     
     #encode-input,
@@ -968,15 +976,18 @@ body.ui-hidden {
         font-size: 12px;
     }
     
-    .encode-buttons {
-        display: flex;
+    .quote-help .encode-buttons {
+        display: flex !important;
         flex-direction: column;
         gap: 8px;
+        text-align: left !important;
+        margin-left: 0 !important;
     }
     
-    .encode-buttons button {
-        width: 100%;
+    .quote-help .encode-buttons button {
+        width: 100% !important;
         margin: 0 !important;
+        display: block !important;
     }
     
     #local-file-input {
