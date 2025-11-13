@@ -982,13 +982,25 @@ body.ui-hidden {
         padding: 10px;
     }
     
+    #converter-mode .layui-card {
+        margin-bottom: 0;
+    }
+    
     #converter-mode .layui-card-header h2 {
-        font-size: 18px;
+        font-size: 16px;
+        line-height: 1.4;
+    }
+    
+    #converter-mode .layui-card-header h2 small {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
     }
     
     #converter-mode .layui-form-item {
         display: flex;
         align-items: flex-start;
+        margin-bottom: 15px;
     }
     
     /* 下拉框选项不使用 flex 布局 */
@@ -998,12 +1010,22 @@ body.ui-hidden {
     }
     
     #converter-mode .layui-form-label {
-        width: 80px !important;
-        padding: 9px 10px !important;
+        width: 70px !important;
+        padding: 9px 8px !important;
         float: none !important;
         display: inline-block !important;
         text-align: right !important;
         flex-shrink: 0;
+        font-size: 13px;
+    }
+    
+    /* 编译模式单选框组优化 */
+    #converter-mode .layui-form-item .layui-input-block [name="compile-mode"] {
+        margin: 8px 12px 8px 0;
+    }
+    
+    #converter-mode .layui-form-item .layui-input-block [name="compile-mode"] + * {
+        margin-right: 15px;
     }
     
     #converter-mode .layui-input-block {
@@ -1018,16 +1040,72 @@ body.ui-hidden {
     #converter-mode .layui-input-block select {
         width: 100% !important;
         box-sizing: border-box;
+        font-size: 13px;
     }
     
     #converter-mode textarea {
         font-size: 12px;
-        min-height: 200px;
+        min-height: 180px;
     }
     
     #converter-mode .layui-btn-lg {
         width: 100%;
         margin-bottom: 10px;
+        padding: 12px 15px !important;
+        font-size: 14px !important;
+        height: auto !important;
+        line-height: 1.4 !important;
+    }
+    
+    /* 按钮组容器 */
+    #converter-mode .layui-form-item:last-of-type .layui-input-block {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+    
+    #converter-mode .layui-form-item:last-of-type .layui-input-block button {
+        margin: 0 !important;
+        margin-top: 5px !important;
+    }
+    
+    #converter-mode .layui-btn-xs {
+        font-size: 12px !important;
+        padding: 5px 10px !important;
+    }
+    
+    /* 快捷按钮组 */
+    #converter-mode .converter-quick-buttons {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    #converter-mode .converter-quick-buttons .layui-btn {
+        flex: 1;
+        min-width: 120px;
+        margin: 0 !important;
+    }
+    
+    /* 辅助说明文字 */
+    #converter-mode .layui-form-mid {
+        font-size: 12px;
+        margin-top: 5px;
+        display: block;
+        margin-left: 0;
+    }
+    
+    /* 单选框和复选框组 */
+    #converter-mode .layui-form-item .layui-input-block > input[type="radio"],
+    #converter-mode .layui-form-item .layui-input-block > input[type="checkbox"] {
+        margin-right: 5px;
+    }
+    
+    /* 复选框标签文字 */
+    #converter-mode .layui-form-item .layui-input-block > div[lay-skin] {
+        display: inline-block;
+        margin-right: 15px;
+        margin-bottom: 8px;
     }
     
     .converter-help {
@@ -1036,11 +1114,23 @@ body.ui-hidden {
     }
     
     .converter-help h3 {
-        font-size: 16px;
+        font-size: 15px;
+        margin-bottom: 10px;
     }
     
     .converter-help ul {
-        font-size: 13px;
+        font-size: 12px;
+        line-height: 1.6;
+        padding-left: 18px;
+    }
+    
+    .converter-help li {
+        margin: 6px 0;
+    }
+    
+    .converter-help code {
+        font-size: 11px;
+        padding: 1px 4px;
     }
 }
 
