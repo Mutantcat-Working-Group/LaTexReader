@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Serve and smoke test site
+        run: |
+          test -f index.html
+          test -s index.html
+          python3 -m http.server 8080 >/tmp/http.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid"' EXIT
+          sleep 1
+          curl -fsS http://127.0.0.1:8080/ -o /tmp/index.html
+          test -s /tmp/index.html
+
+  package:
+    needs: verify
+    runs-on: ubuntu-22.04
+    env:
+      APP_NAME: LaTexReader
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve version
+        id: version
+        run: echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - name: Create site archive
+        run: |
+          mkdir -p dist
+          git archive --format=tar.gz -o "dist/${{ env.APP_NAME }}-${{ steps.version.outputs.value }}.tar.gz" HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist/*.tar.gz
+          if-no-files-found: error
+
+  docker:
+    needs: package
+    runs-on: ubuntu-22.04
+    env:
+      IMAGE: ghcr.io/mutantcat-working-group/latexreader
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve version
+        id: version
+        run: echo "value=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          build-args: |
+            VERSION=${{ steps.version.outputs.value }}
+          tags: |
+            ${{ env.IMAGE }}:${{ github.ref_name }}
+            ${{ env.IMAGE }}:latest
+
+  publish:
+    needs: package
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Generate checksums
+        working-directory: release-assets
+        run: sha256sum -- * > ../checksums.txt
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if gh release view "${TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release upload "${TAG}" release-assets/* checksums.txt --repo "${GITHUB_REPOSITORY}" --clobber
+          else
+            gh release create "${TAG}" release-assets/* checksums.txt --repo "${GITHUB_REPOSITORY}" --title "${TAG}" --generate-notes
+          fi

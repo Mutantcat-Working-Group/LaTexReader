@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Serve and smoke test site
+        run: |
+          test -f index.html
+          test -s index.html
+          python3 -m http.server 8080 >/tmp/http.log 2>&1 &
+          pid=$!
+          trap 'kill "$pid"' EXIT
+          sleep 1
+          curl -fsS http://127.0.0.1:8080/ -o /tmp/index.html
+          test -s /tmp/index.html
