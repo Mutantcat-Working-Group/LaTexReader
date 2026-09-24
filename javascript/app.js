@@ -1,4 +1,5 @@
 // Mutantcat LaTeX Reader - 主应用程序
+// 由异猫工作群（mutantcat.org）发行 · GitHub: https://github.com/Mutantcat-Working-Group
 (function() {
     'use strict';
 
