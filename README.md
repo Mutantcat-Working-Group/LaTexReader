@@ -51,7 +51,7 @@
 - 通过 URL 参数在线预览 LaTeX 内容，可嵌入其他网站：
 	- Base64 编码：`?mode=quote&base64=编码内容`
 	- 网络文件：`?mode=quote&url=文件链接`
-- 自定义参数：`ui=none` 隐藏界面只显示内容、`fontsize=20` 字体大小、`align=center` 对齐方式。
+- 自定义参数：`ui=none` 只输出公式内容（页面其余部分根本不渲染，嵌进帖子/博客不会闪出完整界面）、`fontsize=20` 字体大小、`align=center` 对齐方式。
 - 支持打开本地 `.tex` 文件预览。
 
 #### 移动端
@@ -62,7 +62,7 @@
 
 在线使用（官方地址）：https://latexreader.mutantcat.org/
 
-也从 [Releases](https://github.com/Mutantcat-Working-Group/LaTexReader/releases) 下载 `LaTexReader-1.0.20260920.tar.gz`，解压后本地静态服务器托管或直接用浏览器打开 HTML 即可离线使用，另附 `checksums.txt` 供校验。纯前端项目，Pages、Vercel 等任意静态托管都能部署。版本号使用纯日期递增（如 `1.0.20260920`），推送同族标签（`v` 前缀可选）后，GitHub Actions 会自动打包并发布 Release。
+也从 [Releases](https://github.com/Mutantcat-Working-Group/LaTexReader/releases) 下载 `LaTexReader-1.0.20260920.tar.gz`，解压后本地静态服务器托管或直接用浏览器打开 HTML 即可离线使用，另附 `checksums.txt`、`checksums-md5.txt`、`checksums-sha1.txt` 供校验。纯前端项目，Pages、Vercel 等任意静态托管都能部署。版本号使用纯日期递增（如 `1.0.20260920`），推送同族标签（`v` 前缀可选）后，GitHub Actions 会自动打包并发布 Release。
 
 ### 五、快速上手
 
