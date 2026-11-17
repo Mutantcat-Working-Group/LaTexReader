@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://mutantsite.lovestoblog.com/files/2025/11/12/ebef87b3ce8b703be774828b9a514025.png" style="width:100px;" width="100"/>
+<img src="icon.png" style="width:100px;" width="100"/>
 <h2>Mutantcat LaTeX Reader</h2>
 </div>
 
