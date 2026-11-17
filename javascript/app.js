@@ -14,26 +14,36 @@
 
     // 工具函数
     const Utils = {
-        // 获取 URL 参数
+        // 已注入的样式/脚本地址，避免每次渲染都往 <head> 里重复添加
+        injectedAssets: new Set(),
+
+        // 获取 URL 参数（URLSearchParams 可正确处理值里含 = 的情况，如带 token 的地址）
         getUrlParams() {
             const params = {};
-            const queryString = window.location.search.substring(1);
-            const pairs = queryString.split('&');
-            
-            for (let pair of pairs) {
-                const [key, value] = pair.split('=');
-                if (key) {
-                    params[decodeURIComponent(key)] = decodeURIComponent(value || '');
-                }
-            }
+            new URLSearchParams(window.location.search).forEach((value, key) => {
+                params[key] = value;
+            });
             return params;
+        },
+
+        // 是否为「只显示公式」的内嵌模式（ui=none 且确实带了内容）
+        isEmbedMode() {
+            if (document.documentElement.classList.contains('embed-mode')) {
+                return true;
+            }
+            const params = this.getUrlParams();
+            return params.ui === 'none' && !!(params.base64 || params.url);
         },
 
         // 设置 URL 参数
         setUrlParam(key, value) {
-            const url = new URL(window.location);
-            url.searchParams.set(key, value);
-            window.history.pushState({}, '', url);
+            try {
+                const url = new URL(window.location);
+                url.searchParams.set(key, value);
+                window.history.pushState({}, '', url);
+            } catch (e) {
+                // file:// 等环境下 history API 可能不可用，忽略即可
+            }
         },
 
         // Base64 编码
@@ -55,43 +65,63 @@
         renderLatex(text, container, options = {}) {
             try {
                 container.innerHTML = '';
-                
-                const generator = new latexjs.HtmlGenerator({ 
-                    hyphenate: false 
+
+                const generator = new latexjs.HtmlGenerator({
+                    hyphenate: false
                 });
-                
+
                 const parsed = latexjs.parse(text, { generator: generator });
-                
-                // 添加样式和脚本
-                if (!document.querySelector('#latex-styles')) {
-                    // const styles = generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.12.4/dist/");
-                    // 使用自托管的样式文件以防 CDN 失效
-                    const styles = generator.stylesAndScripts("https://latexreader.mutantcat.org/");
-                    styles.id = 'latex-styles';
-                    document.head.appendChild(styles);
-                }
-                
+
+                // 添加样式和脚本（以当前页面所在目录为基准，避免写死生产域名）
+                this.ensureRendererAssets(generator);
+
                 // 添加渲染结果
                 const fragment = parsed.domFragment();
                 container.appendChild(fragment);
-                
+
                 // 应用字体大小
                 if (options.fontSize) {
                     container.style.fontSize = options.fontSize + 'px';
                 }
-                
+
                 // 应用对齐方式
                 if (options.align) {
                     container.className = container.className.replace(/align-\w+/g, '');
                     container.classList.add('align-' + options.align);
                 }
-                
+
                 return true;
             } catch (error) {
                 console.error('LaTeX 渲染错误:', error);
-                container.innerHTML = '<div class="layui-text" style="color: red;">渲染错误: ' + error.message + '</div>';
+                container.textContent = '';
+                const errorBox = document.createElement('div');
+                errorBox.className = 'layui-text';
+                errorBox.style.color = 'red';
+                errorBox.textContent = '渲染错误: ' + error.message;
+                container.appendChild(errorBox);
                 return false;
             }
+        },
+
+        // 注入 latex.js 渲染所需的 katex.css / article.css / base.js，只注入一次
+        ensureRendererAssets(generator) {
+            const base = new URL('./', window.location.href).href;
+            const assets = generator.stylesAndScripts(base);
+
+            Array.from(assets.childNodes).forEach(node => {
+                const url = node.href || node.src;
+                if (!url) return;
+
+                // 已经加载过或已在 <head> 里就不重复注入
+                if (this.injectedAssets.has(url)) return;
+                const exists = Array.from(document.head.querySelectorAll('link[href], script[src]'))
+                    .some(el => (el.href || el.src) === url);
+
+                this.injectedAssets.add(url);
+                if (!exists) {
+                    document.head.appendChild(node);
+                }
+            });
         }
     };
 
@@ -196,6 +226,7 @@
                         console.error('加载 URL 失败:', error);
                         // 失败时使用默认示例
                         input.value = 'The quadratic formula is $x = \\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$ and Einstein\'s famous equation is $E=mc^2$. For calculus, we have $\\int_0^\\infty e^{-x^2}dx = \\frac{\\sqrt{\\pi}}{2}$.';
+                        this.render();
                     });
                 return;
             }
@@ -620,10 +651,11 @@ This is the end of the sample document.
             windowDiv.style.height = (data?.height || 300) + 'px';
             windowDiv.style.zIndex = ++AppState.windowZIndex;
             
+            // 用 DOM API 拼装，避免窗口名/内容里的 HTML 被解析执行（导入 .mlatex 时尤其重要）
             windowDiv.innerHTML = `
                 <div class="window-header">
                     <div class="window-title">
-                        <input type="text" value="${windowName}" maxlength="50">
+                        <input type="text" maxlength="50">
                     </div>
                     <div class="window-controls">
                         <button class="layui-btn layui-btn-xs layui-btn-danger close-btn">
@@ -637,12 +669,15 @@ This is the end of the sample document.
                         <div class="window-tab" data-tab="preview">预览</div>
                     </div>
                     <div class="window-tab-content">
-                        <textarea class="window-editor" placeholder="输入 LaTeX 代码...">${data?.latex || ''}</textarea>
+                        <textarea class="window-editor" placeholder="输入 LaTeX 代码..."></textarea>
                         <div class="window-preview" style="display: none;"></div>
                     </div>
                 </div>
                 <div class="window-resize-handle"></div>
             `;
+
+            windowDiv.querySelector('.window-title input').value = windowName;
+            windowDiv.querySelector('.window-editor').value = data?.latex || '';
             
             container.appendChild(windowDiv);
             
@@ -900,6 +935,86 @@ This is the end of the sample document.
         }
     };
 
+    // 参考表模式
+    const ReferenceMode = {
+        rendered: false,
+
+        // 把表格「效果」列里的 $...$ 用 latex.js 渲染成真正的公式
+        init() {
+            if (this.rendered) return;
+            const root = document.getElementById('reference-mode');
+            if (!root) return;
+            this.rendered = true;
+
+            root.querySelectorAll('td').forEach(cell => {
+                this.renderMathIn(cell);
+            });
+        },
+
+        renderMathIn(cell) {
+            if (!cell.textContent.includes('$')) return;
+
+            const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    if (!node.nodeValue.includes('$')) return NodeFilter.FILTER_REJECT;
+                    // 跳过 <code> 里的语法示例和已经渲染好的公式
+                    let parent = node.parentNode;
+                    while (parent && parent !== cell) {
+                        if (parent.tagName === 'CODE' || parent.classList.contains('katex')) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        parent = parent.parentNode;
+                    }
+                    return NodeFilter.FILTER_ACCEPT;
+                }
+            });
+
+            const textNodes = [];
+            let node;
+            while ((node = walker.nextNode())) textNodes.push(node);
+            textNodes.forEach(textNode => this.replaceMathInTextNode(textNode));
+        },
+
+        replaceMathInTextNode(node) {
+            const text = node.nodeValue;
+            const pattern = /\$([^$\n]+)\$/g;
+            const fragment = document.createDocumentFragment();
+            let match;
+            let lastIndex = 0;
+            let replaced = false;
+
+            while ((match = pattern.exec(text)) !== null) {
+                replaced = true;
+                if (match.index > lastIndex) {
+                    fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+                }
+                fragment.appendChild(this.renderInlineMath(match[0]));
+                lastIndex = pattern.lastIndex;
+            }
+
+            if (!replaced) return;
+            if (lastIndex < text.length) {
+                fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+            }
+            node.parentNode.replaceChild(fragment, node);
+        },
+
+        renderInlineMath(source) {
+            const output = document.createElement('span');
+            const holder = document.createElement('span');
+            Utils.renderLatex(source, holder);
+
+            holder.querySelectorAll('.katex').forEach(katex => {
+                output.appendChild(katex);
+            });
+
+            if (!output.childNodes.length) {
+                output.textContent = source;
+            }
+            return output;
+        }
+    };
+
     // 文档转换模式
     const ConverterMode = {
         init() {
@@ -907,8 +1022,8 @@ This is the end of the sample document.
             const convertBtn = document.getElementById('convert-btn');
             const loadSampleBtn = document.getElementById('load-sample');
             const uploadTexBtn = document.getElementById('upload-tex');
-            const texFileInput = document.getElementById('tex-file-input');
-            
+            const texFileInput = document.getElementById('converter-tex-file-input');
+
             // 编译模式切换
             layui.use('form', function() {
                 const layuiForm = layui.form;
@@ -1138,6 +1253,68 @@ This is the end of the sample document.
 
     // 网站引入模式
     const QuoteMode = {
+        // 内嵌模式：只渲染公式内容，站点的其他部分连同 DOM 一起移除
+        initEmbed() {
+            document.documentElement.classList.add('embed-mode');
+            document.body.classList.add('embed-mode');
+
+            const quoteDisplay = document.getElementById('quote-display');
+            if (quoteDisplay) {
+                document.body.appendChild(quoteDisplay);
+                quoteDisplay.style.display = 'block';
+            }
+
+            // 只留下公式容器，其余节点整体丢弃（脚本/样式已加载，不再需要）
+            Array.from(document.body.children).forEach(child => {
+                if (child !== quoteDisplay) {
+                    child.remove();
+                }
+            });
+
+            this.loadContent();
+        },
+
+        // 以内嵌模式加载 base64 / url 内容
+        loadContent() {
+            const params = Utils.getUrlParams();
+
+            if (params.base64) {
+                const decoded = Utils.decodeBase64(params.base64);
+                if (!decoded) {
+                    this.showInlineError('Base64 参数解码失败');
+                    return;
+                }
+                this.displayContent(decoded, params);
+                return;
+            }
+
+            if (params.url) {
+                this.loadFromUrl(params)
+                    .then(text => this.displayContent(text, params))
+                    .catch(error => this.showInlineError('加载 URL 失败: ' + error.message));
+            }
+        },
+
+        loadFromUrl(params) {
+            return fetch(params.url).then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP ' + response.status);
+                }
+                return response.text();
+            });
+        },
+
+        showInlineError(message) {
+            const quoteDisplay = document.getElementById('quote-display');
+            if (!quoteDisplay) return;
+            quoteDisplay.textContent = '';
+            const box = document.createElement('div');
+            box.className = 'layui-text';
+            box.style.color = 'red';
+            box.textContent = message;
+            quoteDisplay.appendChild(box);
+        },
+
         init() {
             const encodeInput = document.getElementById('encode-input');
             const encodeOutput = document.getElementById('encode-output');
@@ -1226,46 +1403,10 @@ This is the end of the sample document.
             const params = Utils.getUrlParams();
             const quoteDisplay = document.getElementById('quote-display');
             const quoteHelp = document.querySelector('.quote-help');
-            
-            let hasContent = false;
-            let latexContent = '';
-            
-            // 检查 base64 参数
-            if (params.base64) {
-                latexContent = Utils.decodeBase64(params.base64);
-                hasContent = true;
-            }
-            
-            // 检查 url 参数
-            if (params.url) {
-                fetch(params.url)
-                    .then(response => response.text())
-                    .then(text => {
-                        latexContent = text;
-                        this.displayContent(latexContent, params);
-                    })
-                    .catch(error => {
-                        layui.use('layer', function() {
-                            layui.layer.msg('加载 URL 失败: ' + error.message);
-                        });
-                    });
-                hasContent = true;
-            }
-            
-            if (hasContent && params.base64) {
-                this.displayContent(latexContent, params);
-            }
-            
-            // 检查 ui 参数 - 必须在有内容的情况下才隐藏 UI
-            if (params.ui === 'none' && hasContent) {
-                document.body.classList.add('ui-hidden');
-                // 将 quote-display 移到 body 的直接子元素
-                if (quoteDisplay) {
-                    document.body.appendChild(quoteDisplay);
-                }
-            }
-            
-            // 显示或隐藏帮助
+
+            const hasContent = !!(params.base64 || params.url);
+
+            // 有内容时隐藏帮助、展示内容区
             if (hasContent) {
                 if (quoteHelp) quoteHelp.style.display = 'none';
                 if (quoteDisplay) quoteDisplay.style.display = 'block';
@@ -1273,23 +1414,45 @@ This is the end of the sample document.
                 if (quoteHelp) quoteHelp.style.display = 'block';
                 if (quoteDisplay) quoteDisplay.style.display = 'none';
             }
+
+            if (params.base64) {
+                const decoded = Utils.decodeBase64(params.base64);
+                if (!decoded) {
+                    this.showInlineError('Base64 参数解码失败');
+                    return;
+                }
+                this.displayContent(decoded, params);
+                return;
+            }
+
+            if (params.url) {
+                this.loadFromUrl(params)
+                    .then(text => this.displayContent(text, params))
+                    .catch(error => {
+                        layui.use('layer', function() {
+                            layui.layer.msg('加载 URL 失败: ' + error.message);
+                        });
+                        this.showInlineError('加载 URL 失败: ' + error.message);
+                    });
+            }
         },
 
         displayContent(latex, params) {
             const quoteDisplay = document.getElementById('quote-display');
-            
+            if (!quoteDisplay) return;
+
             const options = {};
-            
+
             // 字体大小
             if (params.fontsize) {
                 options.fontSize = parseInt(params.fontsize);
             }
-            
+
             // 对齐方式
             if (params.align && ['left', 'center', 'right'].includes(params.align)) {
                 options.align = params.align;
             }
-            
+
             Utils.renderLatex(latex, quoteDisplay, options);
         }
     };
@@ -1297,15 +1460,19 @@ This is the end of the sample document.
     // 主应用
     const App = {
         init() {
+            // 内嵌模式：完全不初始化站点界面，只渲染公式
+            if (Utils.isEmbedMode()) {
+                QuoteMode.initEmbed();
+                return;
+            }
+
             layui.use(['element', 'layer', 'form'], () => {
-                const element = layui.element;
-                
                 // 初始化各个模式
                 EditorMode.init();
                 WindowMode.init();
                 ConverterMode.init();
                 QuoteMode.init();
-                
+
                 // PC 版导航切换
                 const navItems = document.querySelectorAll('#main-nav .layui-nav-item');
                 navItems.forEach(item => {
@@ -1314,7 +1481,7 @@ This is the end of the sample document.
                         this.switchMode(mode);
                     });
                 });
-                
+
                 // 手机版 TabBar 导航切换
                 const mobileTabBtns = document.querySelectorAll('.mobile-tab-btn');
                 mobileTabBtns.forEach(btn => {
@@ -1323,10 +1490,10 @@ This is the end of the sample document.
                         this.switchMode(mode);
                     });
                 });
-                
+
                 // 检查 URL 参数初始化模式
                 const params = Utils.getUrlParams();
-                
+
                 // 如果携带了 base64 或 url 参数但没有指定 mode，默认进入编辑器模式
                 if ((params.base64 || params.url) && !params.mode) {
                     this.switchMode('editor');
@@ -1336,7 +1503,14 @@ This is the end of the sample document.
             });
         },
 
+        // 已知模式，用于校验 URL 参数，避免未知 mode 把所有容器都隐藏导致白屏
+        knownModes: ['editor', 'window', 'converter', 'reference', 'quote'],
+
         switchMode(mode) {
+            if (!this.knownModes.includes(mode)) {
+                mode = 'editor';
+            }
+
             AppState.currentMode = mode;
             
             // 更新 PC 版导航
@@ -1370,6 +1544,11 @@ This is the end of the sample document.
                 mode === 'reference' ? 'block' : 'none';
             document.getElementById('quote-mode').style.display = 
                 mode === 'quote' ? 'block' : 'none';
+
+            // 参考表里有 60 多个公式，等真正打开时才渲染
+            if (mode === 'reference') {
+                ReferenceMode.init();
+            }
             
             // 更新 URL 参数
             Utils.setUrlParam('mode', mode);

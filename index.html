@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mutantcat LaTeX Reader</title>
-    <link rel="icon" href="icon.png" type="image/x-icon">
-    <link href="//unpkg.com/layui@2.13.0/dist/css/layui.css" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="css/layui.css"> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/css/katex.min.css" rel="stylesheet"> -->
-    <link rel="stylesheet" href="css/katex.min.css">
+    <script>
+        // 内嵌模式（ui=none 且带内容）在首屏渲染前标记，避免先画出完整界面再隐藏造成的闪烁
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('ui') === 'none' && (params.get('base64') || params.get('url'))) {
+                document.documentElement.classList.add('embed-mode');
+            }
+        })();
+    </script>
+    <link rel="icon" href="icon-64.png" type="image/x-icon">
+    <link rel="stylesheet" href="css/layui.css">
+    <link rel="stylesheet" href="css/katex.css">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -180,7 +187,7 @@
                                         <button type="button" class="layui-btn layui-btn-xs layui-btn-primary" id="upload-tex">
                                             <i class="layui-icon layui-icon-upload"></i> 上传 .tex 文件
                                         </button>
-                                        <input type="file" id="tex-file-input" accept=".tex" style="display: none;">
+                                        <input type="file" id="converter-tex-file-input" accept=".tex" style="display: none;">
                                     </div>
                                 </div>
                             </div>
@@ -771,7 +778,7 @@ c & d
                                             </tr>
                                             <tr>
                                                 <td><code>ui</code></td>
-                                                <td>设置为 <code>none</code> 时隐藏所有 UI，只显示公式内容</td>
+                                                <td>设置为 <code>none</code> 时只输出公式内容，页面其余界面不渲染（适合嵌入其他网站，不会闪出完整界面）</td>
                                                 <td><code>ui=none</code></td>
                                             </tr>
                                             <tr>
@@ -904,14 +911,9 @@ c & d
         </footer>
     </div>
 
-    <script src="//unpkg.com/layui@2.13.0/dist/layui.js"></script>
-    <!-- <script src="javascript/layui.js"></script> -->
-    <!-- <script src="//cdn.jsdelivr.net/npm/latex.js/dist/latex.js"></script> -->
+    <script src="javascript/layui.js"></script>
     <script src="javascript/latex.js"></script>
-    <!-- <script src="//cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script> -->
     <script src="javascript/html2canvas.min.js"></script>
-    <!-- <script src="//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script> -->
-    <script src="javascript/tex-svg.js"></script>
     <script src="javascript/app.js"></script>
 </body>
 </html>
